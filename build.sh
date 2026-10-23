@@ -157,7 +157,7 @@ if [ -d "$OUT/browser/chrome/icons/default" ]; then
     cp "$ROOT/branding/icons/icon$s.png" "$OUT/browser/chrome/icons/default/default$s.png"
   done
 fi
-install -Dm644 "$ROOT/branding/marmara.svg" "$OUT/marmara.svg"
+install -Dm644 "$ROOT/branding/marmara-icon.svg" "$OUT/marmara.svg"
 if [ "$PLATFORM" = windows ]; then
   MINGW="x86_64-w64-mingw32"
   for tool in "$MINGW-gcc" "$MINGW-windres"; do

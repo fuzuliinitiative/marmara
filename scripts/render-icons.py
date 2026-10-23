@@ -15,6 +15,8 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SVG = ROOT / "branding" / "marmara.svg"
+# Uygulama simgeleri için daha dar kadraj: simge kendi alanını doldurur, kenar boşluğu azdır.
+SVG_ICON = ROOT / "branding" / "marmara-icon.svg"
 OUT = ROOT / "branding" / "icons"
 
 # ad -> (genişlik, yükseklik). Kare olmayanlarda logo ortalanır.
@@ -48,11 +50,11 @@ def render_rsvg(svg: pathlib.Path, out: pathlib.Path, w: int, h: int) -> None:
 def render_playwright(svg: pathlib.Path, jobs: dict) -> None:
     from playwright.sync_api import sync_playwright
 
-    data = svg.read_text()
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
         for name, (w, h) in jobs.items():
+            data = (SVG_ICON if name.startswith("icon") else svg).read_text()
             side = min(w, h)
             page.set_viewport_size({"width": w, "height": h})
             page.set_content(
@@ -68,7 +70,7 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     if shutil.which("rsvg-convert") and shutil.which("magick"):
         for name, (w, h) in SIZES.items():
-            render_rsvg(SVG, OUT / name, w, h)
+            render_rsvg(SVG_ICON if name.startswith("icon") else SVG, OUT / name, w, h)
     else:
         render_playwright(SVG, SIZES)
     for name in SIZES:

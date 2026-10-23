@@ -44,7 +44,7 @@ package() {
 
   install -Dm644 "$root/packaging/linux/marmara.desktop" \
     "$pkgdir/usr/share/applications/marmara.desktop"
-  install -Dm644 "$root/branding/marmara.svg" \
+  install -Dm644 "$root/branding/marmara-icon.svg" \
     "$pkgdir/usr/share/icons/hicolor/scalable/apps/marmara.svg"
   for s in 16 32 48 64 128 256 512; do
     install -Dm644 "$root/branding/icons/icon$s.png" \

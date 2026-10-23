@@ -20,7 +20,7 @@ fi
 
 mkdir -p "$APPS" "$BIN" "$ICONS/scalable/apps"
 ln -sf "$DIST/marmara" "$BIN/marmara"
-install -m644 "$ROOT/branding/marmara.svg" "$ICONS/scalable/apps/marmara.svg"
+install -m644 "$ROOT/branding/marmara-icon.svg" "$ICONS/scalable/apps/marmara.svg"
 for s in 16 32 48 64 128 256 512; do
   install -Dm644 "$ROOT/branding/icons/icon$s.png" "$ICONS/${s}x${s}/apps/marmara.png"
 done
