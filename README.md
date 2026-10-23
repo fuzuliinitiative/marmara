@@ -117,11 +117,44 @@ olarak ekleyin, metainfo'daki yorum satırını açın ve
 izleyin. Kabul edilince yeni release'ler `x-checker-data` sayesinde otomatik güncelleme
 isteği (PR) olarak gelir.
 
+### Kendi Flatpak depomuz
+
+Flathub yerine Marmara kendi Flatpak deposunu GitHub Pages'te yayımlar
+(`.github/workflows/flatpak-repo.yml`). Her yeni release'te Flatpak yeniden paketlenir,
+GPG ile imzalanır ve `https://fuzuliinitiative.github.io/marmara/` adresine konur.
+
+Kullanıcı kurulumu:
+
+```sh
+flatpak install --user https://fuzuliinitiative.github.io/marmara/marmara.flatpakref
+```
+
+Sonraki güncellemeler yazılım merkezinden (GNOME Software, Bazaar) gelir.
+
+Kurulum (bir kez):
+
+1. İmza anahtarı üretin (parolasız):
+   ```sh
+   gpg --batch --passphrase '' --quick-generate-key "Marmara Flatpak" rsa4096 sign never
+   gpg --armor --export-secret-keys "Marmara Flatpak"
+   ```
+2. GitHub deposunda **Settings → Secrets and variables → Actions → New repository secret**:
+   adı `FLATPAK_GPG_PRIVATE_KEY`, değer yukarıdaki çıktının tamamı
+   (`-----BEGIN PGP PRIVATE KEY BLOCK-----` satırından sona kadar).
+3. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+4. **Actions → Flatpak deposu → Run workflow**.
+
+Gizli anahtarı kimseyle paylaşmayın ve depoya eklemeyin.
+
 ## Lisans ve marka
 
 Marmara'nın kendi dosyaları ve LibreWolf/Firefox'tan değiştirilen dosyalar
 [Mozilla Public License 2.0](LICENSE) kapsamındadır. Bu repoyu açık tutmak MPL'in
 kaynak paylaşma şartını karşılar.
+
+**Marmara adı ve logosu MPL kapsamında değildir.** Kodu serbestçe fork'layabilirsiniz,
+ama değiştirilmiş bir sürümü Marmara adıyla ya da Marmara logosuyla yayımlayamazsınız.
+Ayrıntı: [TRADEMARK.md](TRADEMARK.md).
 
 "Firefox" ve "LibreWolf" adları ile logoları Marmara'da marka olarak
 kullanılmaz. Yalnızca nereden türediğini anlatırken anılır. Önceden kurulu
