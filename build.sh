@@ -167,6 +167,9 @@ if [ "$PLATFORM" = windows ]; then
   python3 -I "$ROOT/scripts/make_ico.py" "$WORK/launcher/marmara.ico" \
     "$ROOT"/branding/icons/icon{16,32,48,64,128,256}.png
   cp "$ROOT/packaging/windows/marmara.rc" "$ROOT/packaging/windows/launcher.c" "$WORK/launcher/"
+  # marmara-bin.exe'nin kendi (LibreWolf) simgesini değiştirmek için: Windows'ta CI
+  # rcedit ile gömer ve bu dosyayı siler
+  cp "$WORK/launcher/marmara.ico" "$OUT/marmara.ico"
   (cd "$WORK/launcher" &&
     "$MINGW-windres" marmara.rc -O coff -o marmara-res.o &&
     "$MINGW-gcc" -Os -municode -mwindows -o "$OUT/marmara.exe" launcher.c marmara-res.o -static -s)

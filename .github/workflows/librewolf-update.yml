@@ -126,6 +126,7 @@ jobs:
   # release'e eklenmez (çalıştırma kırmızı görünür).
   windows:
     needs: update
+    timeout-minutes: 20
     if: needs.update.outputs.released == 'true'
     runs-on: ubuntu-latest
     env:
@@ -134,7 +135,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Gerekli araçlar
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends python3 unzip zip gcc-mingw-w64-x86-64
+        run: sudo apt-get -o Acquire::Retries=5 update && sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends python3 unzip zip gcc-mingw-w64-x86-64
 
       - name: LibreWolf Windows paketini indir
         run: curl -fL --retry 3 -o librewolf-win.zip "${{ needs.update.outputs.windows_url }}"
@@ -154,6 +155,7 @@ jobs:
 
   windows-test:
     needs: [update, windows]
+    timeout-minutes: 15
     runs-on: windows-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -162,11 +164,40 @@ jobs:
         with:
           name: marmara-windows
 
-      - name: Aç ve başlat
+      - name: Aç
         shell: pwsh
         run: |
           $zip = Get-ChildItem marmara-*-windows-x86_64.zip | Select-Object -First 1
           Expand-Archive $zip.FullName -DestinationPath app
+
+      - name: Simge ve ürün adını marmara-bin.exe'ye göm
+        shell: pwsh
+        run: |
+          # LibreWolf'un exe'si kendi simgesini ve "LibreWolf" adını taşır; görev çubuğunda
+          # görünen simge ve ad buradan gelir.
+          $dir = (Resolve-Path app/marmara).Path
+          Invoke-WebRequest -Uri "https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe" -OutFile rcedit.exe
+          .\rcedit.exe "$dir\marmara-bin.exe" `
+            --set-icon "$dir\marmara.ico" `
+            --set-version-string FileDescription Marmara `
+            --set-version-string ProductName Marmara `
+            --set-version-string InternalName Marmara `
+            --set-version-string CompanyName "Fuzuli Initiative" `
+            --set-version-string OriginalFilename marmara-bin.exe
+          if ($LASTEXITCODE -ne 0) { Write-Host "::error::rcedit başarısız"; exit 1 }
+          Remove-Item "$dir\marmara.ico"
+
+      - name: Yeniden paketle
+        shell: pwsh
+        run: |
+          $name = (Get-ChildItem marmara-*-windows-x86_64.zip | Select-Object -First 1).Name
+          Remove-Item $name
+          7z a -tzip -mx=5 $name app\marmara | Out-Null
+          if ($LASTEXITCODE -ne 0) { Write-Host "::error::7z başarısız"; exit 1 }
+
+      - name: Başlat ve dene
+        shell: pwsh
+        run: |
           $dir = (Resolve-Path app/marmara).Path
           Get-ChildItem $dir | Select-Object -First 80 | Format-Table Name, Length | Out-String | Write-Host
           $profile_dir = Join-Path $env:RUNNER_TEMP "marmara-profile"
@@ -202,8 +233,16 @@ jobs:
           Write-Host "Başlatıcı çalışıyor."
           $running | Stop-Process -Force
 
+      - name: Son paketi sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: marmara-windows-final
+          path: marmara-*-windows-x86_64.zip
+          if-no-files-found: error
+
   windows-release:
     needs: [update, windows, windows-test]
+    timeout-minutes: 10
     if: needs.windows.result == 'success' && needs.windows-test.result == 'success'
     runs-on: ubuntu-latest
     env:
@@ -211,7 +250,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: marmara-windows
+          name: marmara-windows-final
 
       - name: Release'e ekle
         run: |

@@ -1,1 +1,22 @@
 1 ICON "marmara.ico"
+
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "CompanyName", "Fuzuli Initiative"
+      VALUE "FileDescription", "Marmara"
+      VALUE "InternalName", "Marmara"
+      VALUE "OriginalFilename", "marmara.exe"
+      VALUE "ProductName", "Marmara"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END
