@@ -66,16 +66,21 @@ The repository is signed; the key is included in `marmara.flatpakrepo`.
 > Marmara is not on Flathub (yet), so software centers like Bazaar will not list it.
 > GNOME Software and the commands above work.
 
-### Windows (experimental)
+### Windows
 
-Download `marmara-<version>-windows-x86_64.zip` from the
-[latest release](https://github.com/fuzuliinitiative/marmara/releases/latest), unpack
-it anywhere and run `marmara.exe`. There is no installer: it is a portable folder.
+Download `Marmara-<version>-windows-x86_64-setup.exe` from the
+[latest release](https://github.com/fuzuliinitiative/marmara/releases/latest) and run it.
+No administrator rights are needed. It installs for your user, adds Start menu and
+desktop shortcuts, and can be removed from Windows *Installed apps* (your profile —
+bookmarks, history — is kept).
 
-> This build is new. It starts and works in automated tests, but its look on Windows has
-> not been checked by hand yet. The file is not code-signed, so Windows SmartScreen may
-> warn you; choose *More info → Run anyway*. Updates are manual: Marmara tells you in
-> **Settings → General → Updates** when a new version is out.
+> The installer is not code-signed, so Windows SmartScreen may warn you; choose
+> *More info → Run anyway*. Updates are one click: when a new version is out, press
+> **Update now** in **Settings → General → Updates**. Marmara downloads the installer,
+> checks its checksum, installs over the old version and restarts.
+>
+> A portable `marmara-<version>-windows-x86_64.zip` (unpack anywhere, run `marmara.exe`)
+> is also published; it does not update itself and opens the release page instead.
 
 ### From the release archive (Linux)
 

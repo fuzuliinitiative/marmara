@@ -66,16 +66,22 @@ Depo imzalıdır. Anahtar `marmara.flatpakrepo` dosyasında bulunur.
 > Marmara henüz Flathub'da değil, bu yüzden Bazaar gibi yazılım merkezleri onu
 > listelemez. GNOME Yazılım ve yukarıdaki komutlar çalışır.
 
-### Windows (deneysel)
+### Windows
 
 [En son sürümden](https://github.com/fuzuliinitiative/marmara/releases/latest)
-`marmara-<sürüm>-windows-x86_64.zip` dosyasını indirin, istediğiniz bir yere açın ve
-`marmara.exe`'yi çalıştırın. Kurulum sihirbazı yoktur, taşınabilir bir klasördür.
+`Marmara-<sürüm>-windows-x86_64-setup.exe` dosyasını indirip çalıştırın. Yönetici izni
+gerekmez. Yalnızca sizin kullanıcınız için kurulur, Başlat menüsü ve masaüstü kısayolu
+ekler, Windows'un *Yüklü uygulamalar* listesinden kaldırılabilir (profiliniz, yani yer
+imleri ve geçmiş, silinmez).
 
-> Bu sürüm yenidir. Otomatik testlerde açılıyor ve çalışıyor, ama Windows'taki görünüşü
-> henüz elle denenmedi. Dosya kod imzalı değildir, bu yüzden Windows SmartScreen uyarı
-> verebilir; *Daha fazla bilgi → Yine de çalıştır* deyin. Güncelleme elle yapılır: yeni
-> sürüm çıkınca Marmara bunu **Ayarlar → Genel → Güncellemeler** bölümünde söyler.
+> Kurulum dosyası kod imzalı değildir, bu yüzden Windows SmartScreen uyarı verebilir;
+> *Daha fazla bilgi → Yine de çalıştır* deyin. Güncelleme tek tıktır: yeni sürüm çıkınca
+> **Ayarlar → Genel → Güncellemeler** bölümünde **Şimdi güncelle**'ye basın. Marmara
+> kurulum dosyasını indirir, sağlama toplamını doğrular, eski sürümün üzerine kurar ve
+> yeniden açılır.
+>
+> Taşınabilir `marmara-<sürüm>-windows-x86_64.zip` da yayımlanır (istediğiniz yere açıp
+> `marmara.exe`'yi çalıştırın); kendini güncellemez, bunun yerine sürüm sayfasını açar.
 
 ### Sürüm arşivinden (Linux)
 
