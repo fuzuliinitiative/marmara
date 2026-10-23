@@ -1,6 +1,6 @@
 # Marmara
 
-**A private, simple web browser designed after the GNOME Human Interface Guidelines.**
+**Simple and transparent.**
 
 🇹🇷 [Türkçe](README.tr.md)
 
@@ -12,14 +12,15 @@ Marmara release automatically.
 
 ![Adwaita-style tabs and address bar](flatpak/screenshot-1.png)
 
-## Why Marmara
+## The idea
 
-- **Private by default.** No telemetry, no tracking, nothing to switch on.
-- **Calm, consistent design.** Marmara follows the GNOME Human Interface Guidelines:
-  clear, uncluttered and familiar, with light and dark modes.
-- **Simple.** Sensible defaults and a small settings window instead of hundreds of options.
-- **Your choice.** Language, theme and search engine are picked by you on first run.
-- **Open.** The code is public and open source.
+Marmara takes its inspiration from jellyfish, and so does its logo.
+
+- **Transparent**, like a jellyfish: the code is open source, nothing is hidden, there is
+  no telemetry, and nothing is chosen for you.
+- **Simple**, like its shape: easy to use and functional. Sensible defaults, a small
+  settings window instead of hundreds of options, and a clean design that follows the
+  GNOME Human Interface Guidelines.
 
 ## Features
 
@@ -65,9 +66,16 @@ The repository is signed; the key is included in `marmara.flatpakrepo`.
 > Marmara is not on Flathub (yet), so software centers like Bazaar will not list it.
 > GNOME Software and the commands above work.
 
-### Windows
+### Windows (experimental)
 
-Coming soon.
+Download `marmara-<version>-windows-x86_64.zip` from the
+[latest release](https://github.com/fuzuliinitiative/marmara/releases/latest), unpack
+it anywhere and run `marmara.exe`. There is no installer: it is a portable folder.
+
+> This build is new. It starts and works in automated tests, but its look on Windows has
+> not been checked by hand yet. The file is not code-signed, so Windows SmartScreen may
+> warn you; choose *More info → Run anyway*. Updates are manual: Marmara tells you in
+> **Settings → General → Updates** when a new version is out.
 
 ### From the release archive (Linux)
 

@@ -1,6 +1,6 @@
 # Marmara
 
-**GNOME İnsan Arayüzü Yönergeleri'ne göre tasarlanmış, gizli ve sade bir web tarayıcısı.**
+**Basit ve şeffaf.**
 
 🇬🇧 [English](README.md)
 
@@ -12,14 +12,15 @@ kendiliğinden yeni bir Marmara sürümüne dönüşebilir.
 
 ![Adwaita görünümlü sekmeler ve adres çubuğu](flatpak/screenshot-1.png)
 
-## Neden Marmara?
+## Fikir
 
-- **Varsayılan olarak gizli.** Telemetri yok, izleme yok, açmanız gereken bir şey yok.
-- **Sakin ve tutarlı tasarım.** Marmara, GNOME İnsan Arayüzü Yönergeleri'ni izler: net,
-  sade, tanıdık; açık ve koyu modla birlikte.
-- **Sade.** Yüzlerce seçenek yerine akıllı varsayılanlar ve küçük bir ayarlar penceresi.
-- **Seçim sizin.** Dil, tema ve arama motorunu ilk açılışta siz seçersiniz.
-- **Açık.** Kodu herkese açık ve özgür yazılımdır.
+Marmara'nın ilham kaynağı deniz anaları, logosu da öyle.
+
+- Deniz anası gibi **şeffaf**: kod açık kaynaktır, hiçbir şey gizli değildir, telemetri
+  yoktur ve sizin yerinize bir şey seçilmez.
+- Biçimi gibi **basit**: kullanımı kolay ve işlevsel. Akıllı varsayılanlar, yüzlerce
+  seçenek yerine küçük bir ayarlar penceresi ve GNOME İnsan Arayüzü Yönergeleri'ni
+  izleyen temiz bir tasarım.
 
 ## Özellikler
 
@@ -65,9 +66,16 @@ Depo imzalıdır. Anahtar `marmara.flatpakrepo` dosyasında bulunur.
 > Marmara henüz Flathub'da değil, bu yüzden Bazaar gibi yazılım merkezleri onu
 > listelemez. GNOME Yazılım ve yukarıdaki komutlar çalışır.
 
-### Windows
+### Windows (deneysel)
 
-Yakında.
+[En son sürümden](https://github.com/fuzuliinitiative/marmara/releases/latest)
+`marmara-<sürüm>-windows-x86_64.zip` dosyasını indirin, istediğiniz bir yere açın ve
+`marmara.exe`'yi çalıştırın. Kurulum sihirbazı yoktur, taşınabilir bir klasördür.
+
+> Bu sürüm yenidir. Otomatik testlerde açılıyor ve çalışıyor, ama Windows'taki görünüşü
+> henüz elle denenmedi. Dosya kod imzalı değildir, bu yüzden Windows SmartScreen uyarı
+> verebilir; *Daha fazla bilgi → Yine de çalıştır* deyin. Güncelleme elle yapılır: yeni
+> sürüm çıkınca Marmara bunu **Ayarlar → Genel → Güncellemeler** bölümünde söyler.
 
 ### Sürüm arşivinden (Linux)
 
