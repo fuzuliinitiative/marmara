@@ -36,7 +36,7 @@ const PREF_LOCALE = "intl.locale.requested";
 // Güncelleme denetimi: yalnızca kullanıcı düğmeye basınca GitLab'a tek bir istek gider.
 // Marmara'nın GitLab proje yolu ("kullanıcı/proje"). Boşsa güncelleme grubu gizlenir.
 // En son sürüm, projenin en son "release"inin etiketidir ("v1.1" ya da "1.1").
-const GITLAB_PROJECT = "";
+const GITLAB_PROJECT = "fuzuli/marmara";
 const UPDATE_TIMEOUT_MS = 10000;
 
 // Arayüz dilleri (Marmara yalnızca bunları taşır). Değer: intl.locale.requested.
