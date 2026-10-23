@@ -1,0 +1,126 @@
+/* Karşılama ekranı: ayarlar penceresinin satır/kart görünümünü kullanır.
+ * Yapıyı modules/MarmaraWelcome.sys.mjs kuruyor. */
+
+dialog.marmara-welcome-dialog {
+  --mm-set-card: var(--mm-card-bg, color-mix(in srgb, currentColor 6%, transparent));
+  --mm-set-hover: color-mix(in srgb, currentColor 7%, transparent);
+  --mm-set-active: color-mix(in srgb, currentColor 14%, transparent);
+  --mm-set-line: var(--mm-border, color-mix(in srgb, currentColor 12%, transparent));
+  --mm-set-accent: var(--mm-accent, AccentColor);
+
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  box-sizing: border-box;
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 48px);
+  padding: 28px 28px 20px;
+  overflow: auto;
+  border: 1px solid var(--mm-border, color-mix(in srgb, currentColor 15%, transparent));
+  border-radius: 16px;
+  background-color: var(--mm-dialog-bg, Canvas);
+  color: var(--mm-window-fg, CanvasText);
+  box-shadow: 0 8px 32px rgb(0 0 6 / 0.35);
+  font: menu;
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    animation: marmara-welcome-in 160ms ease-out;
+  }
+
+  &::backdrop {
+    background-color: rgb(0 0 6 / 0.45);
+  }
+}
+
+@keyframes marmara-welcome-in {
+  from { opacity: 0; transform: scale(0.96); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.marmara-welcome-dialog[open] { animation: none; }
+}
+
+.marmara-welcome-logo {
+  align-self: center;
+  width: 64px;
+  height: 64px;
+  margin-block-end: 8px;
+}
+
+.marmara-welcome-title {
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: 800;
+  text-align: center;
+}
+
+.marmara-welcome-sub {
+  margin: 0 0 14px;
+  text-align: center;
+  opacity: 0.75;
+  line-height: 1.4;
+}
+
+.marmara-welcome-body {
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.marmara-welcome-choice {
+  cursor: pointer;
+}
+
+.marmara-welcome-check {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  visibility: hidden;
+  -moz-context-properties: fill, stroke;
+  fill: var(--mm-set-accent);
+  stroke: var(--mm-set-accent);
+
+  .marmara-welcome-choice[aria-checked="true"] > & {
+    visibility: visible;
+  }
+}
+
+.marmara-welcome-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-start: 18px;
+}
+
+.marmara-welcome-side {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+
+  &.end { justify-content: flex-end; }
+  > [hidden] { display: none; }
+}
+
+.marmara-welcome-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.marmara-welcome-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, currentColor 25%, transparent);
+
+  &.current { background-color: var(--mm-set-accent); }
+}
+
+.marmara-settings-pill:disabled {
+  opacity: 0.45;
+}

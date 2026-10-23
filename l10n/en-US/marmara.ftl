@@ -189,3 +189,16 @@ marmara-settings-update-download = Download
 marmara-settings-update-available-flatpak = New version available: { $version }. Run in a terminal: { $command }
 marmara-settings-update-copy-command = Copy command
 marmara-settings-update-copied = Copied
+
+## First-run welcome
+marmara-welcome-language-title = Welcome to Marmara
+marmara-welcome-language-sub = Choose your language. The change applies after a restart.
+marmara-welcome-theme-title = Choose the look
+marmara-welcome-theme-sub = Follow the system, or pick the light or dark theme.
+marmara-welcome-search-title = Choose your search engine
+marmara-welcome-search-sub = Used in the address bar and on new tabs. You can change it any time in Settings.
+marmara-welcome-next = Next
+marmara-welcome-back = Back
+marmara-welcome-skip = Skip
+marmara-welcome-finish = Get started
+marmara-welcome-restart = Restart

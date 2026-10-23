@@ -991,3 +991,6 @@ export const MarmaraSettings = {
     new SettingsDialog(win).open(start);
   },
 };
+
+/** Karşılama ekranı (MarmaraWelcome) ile ortak kullanılan parçalar */
+export const MarmaraSettingsShared = { themeBinding, localeBinding, LANGUAGES, restartBrowser };

@@ -189,3 +189,16 @@ marmara-settings-update-download = İndir
 marmara-settings-update-available-flatpak = Yeni sürüm var: { $version }. Terminalde şunu çalıştırın: { $command }
 marmara-settings-update-copy-command = Komutu kopyala
 marmara-settings-update-copied = Kopyalandı
+
+## İlk açılış karşılaması
+marmara-welcome-language-title = Marmara'ya hoş geldiniz
+marmara-welcome-language-sub = Dilinizi seçin. Değişiklik yeniden başlatınca uygulanır.
+marmara-welcome-theme-title = Görünümü seçin
+marmara-welcome-theme-sub = Sisteme uyabilir ya da açık veya koyu temayı seçebilirsiniz.
+marmara-welcome-search-title = Arama motorunuzu seçin
+marmara-welcome-search-sub = Adres çubuğunda ve yeni sekmede kullanılır. Ayarlar'dan istediğiniz zaman değiştirebilirsiniz.
+marmara-welcome-next = İleri
+marmara-welcome-back = Geri
+marmara-welcome-skip = Atla
+marmara-welcome-finish = Başla
+marmara-welcome-restart = Yeniden başlat
