@@ -47,23 +47,17 @@ jobs:
         run: |
           curl -fL --retry 3 -o win.zip "${{ steps.assets.outputs.url }}"
           mkdir win && unzip -q win.zip -d win
-          echo "::group::Paket: $(basename "${{ steps.assets.outputs.url }}")"
+          echo "=== Paket: $(basename "${{ steps.assets.outputs.url }}")"
           echo "toplam dosya: $(find win -type f | wc -l)"
-          echo "::endgroup::"
-          echo "::group::Kök klasör (ls -la)"
+          echo "=== Kök klasör (ls -la)"
           ls -la win/librewolf
-          echo "::endgroup::"
-          echo "::group::Klasör yapısı (2 seviye)"
+          echo "=== Klasör yapısı (2 seviye)"
           find win -maxdepth 2 | sort
-          echo "::endgroup::"
-          echo "::group::Alt klasörler (browser, defaults, distribution)"
+          echo "=== Alt klasörler (browser, defaults, distribution)"
           for d in win/librewolf/browser win/librewolf/defaults win/librewolf/distribution; do echo "--- $d"; find "$d" -maxdepth 2 2>/dev/null | sort | head -40; done
-          echo "::endgroup::"
           for f in $(find win -maxdepth 3 \( -name 'application.ini' -o -name '*.cfg' -o -name 'local-settings.js' -o -name 'policies.json' -o -name 'distribution.ini' -o -name 'omni.ja' \) | sort); do
-            echo "::group::$f ($(stat -c %s "$f") bayt)"
+            echo "=== $f ($(stat -c %s "$f") bayt)"
             case "$f" in *.ja) ;; *) head -60 "$f" ;; esac
-            echo "::endgroup::"
           done
-          echo "::group::exe dosyaları"
+          echo "=== exe dosyaları"
           find win -iname '*.exe' -o -iname '*.dll' | sort | head -60
-          echo "::endgroup::"
