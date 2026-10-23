@@ -144,16 +144,15 @@ function isFlatpak() {
   }
 }
 
-/** Yazılım merkezinde (GNOME Software, Bazaar) Marmara'nın sayfasını açar; olmazsa false */
-function openInSoftwareCenter(win) {
+/** Flatpak'ta kullanıcının yazacağı güncelleme komutu */
+const FLATPAK_UPDATE_COMMAND = `flatpak update ${FLATPAK_ID}`;
+
+function copyToClipboard(text) {
   try {
-    const uri = Services.io.newURI(`appstream://${FLATPAK_ID}`);
-    Cc["@mozilla.org/uriloader/external-protocol-service;1"]
-      .getService(Ci.nsIExternalProtocolService)
-      .loadURI(uri, Services.scriptSecurityManager.getSystemPrincipal(), null, win.browsingContext, false, true);
+    Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper).copyString(text);
     return true;
   } catch (e) {
-    console.error("Marmara yazılım merkezi:", e);
+    console.error("Marmara pano:", e);
     return false;
   }
 }
@@ -757,7 +756,12 @@ class SettingsDialog {
     const setState = (state, args = {}) => {
       status.setAttribute("data-l10n-id", id(`update-${state}`));
       status.setAttribute("data-l10n-args", JSON.stringify(args));
-      const download = isFlatpak() ? "update-open-store" : "update-download";
+      const flatpak = isFlatpak();
+      if (state == "available" && flatpak) {
+        status.setAttribute("data-l10n-id", id("update-available-flatpak"));
+        status.setAttribute("data-l10n-args", JSON.stringify({ ...args, command: FLATPAK_UPDATE_COMMAND }));
+      }
+      const download = flatpak ? "update-copy-command" : "update-download";
       button.setAttribute("data-l10n-id", id(state == "available" ? download : "update-check"));
       button.classList.toggle("suggested", state == "available");
       button.disabled = state == "checking";
@@ -766,10 +770,18 @@ class SettingsDialog {
 
     button.addEventListener("click", async () => {
       if (downloadUrl) {
-        // Flatpak'ta güncelleme yazılım merkezinden yapılır; açılamazsa release sayfası
-        if (!(isFlatpak() && openInSoftwareCenter(this.win))) {
-          this.win.openTrustedLinkIn(downloadUrl, "tab");
+        if (isFlatpak()) {
+          // Flatpak'ta güncelleme Flatpak'ın kendi komutuyla yapılır (sandbox'ı delmiyoruz)
+          if (copyToClipboard(FLATPAK_UPDATE_COMMAND)) {
+            button.setAttribute("data-l10n-id", id("update-copied"));
+            this.doc.l10n.translateFragment(row);
+          } else {
+            this.win.openTrustedLinkIn(downloadUrl, "tab");
+            this.close();
+          }
+          return;
         }
+        this.win.openTrustedLinkIn(downloadUrl, "tab");
         this.close();
         return;
       }

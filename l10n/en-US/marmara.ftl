@@ -186,4 +186,6 @@ marmara-settings-update-available = New version available: { $version }
 marmara-settings-update-error = Couldn't check; check your connection
 marmara-settings-update-check = Check
 marmara-settings-update-download = Download
-marmara-settings-update-open-store = Open in Software
+marmara-settings-update-available-flatpak = New version available: { $version }. Run in a terminal: { $command }
+marmara-settings-update-copy-command = Copy command
+marmara-settings-update-copied = Copied

@@ -186,4 +186,6 @@ marmara-settings-update-available = Yeni sürüm var: { $version }
 marmara-settings-update-error = Denetlenemedi; bağlantınızı kontrol edin
 marmara-settings-update-check = Denetle
 marmara-settings-update-download = İndir
-marmara-settings-update-open-store = Yazılım Merkezi'nde aç
+marmara-settings-update-available-flatpak = Yeni sürüm var: { $version }. Terminalde şunu çalıştırın: { $command }
+marmara-settings-update-copy-command = Komutu kopyala
+marmara-settings-update-copied = Kopyalandı
