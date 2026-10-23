@@ -1,0 +1,89 @@
+# Windows paketini YAYIMLAMADAN dener (elle çalıştırılır).
+#
+# En son LibreWolf'un Windows paketinden Marmara'yı derler, GitHub'ın Windows makinesinde
+# açılıp açılmadığını sınar ve paketi "Artifacts" olarak saklar. Release açmaz, sürüm
+# numarasına dokunmaz.
+#
+# Bu dosya GitHub'da .github/workflows/ altında durmalı.
+
+name: Windows denemesi
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: En son LibreWolf sürümünü bul
+        id: latest
+        run: python3 scripts/latest-librewolf.py | tee -a "$GITHUB_OUTPUT"
+
+      - name: Gerekli araçlar
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends python3 unzip zip gcc-mingw-w64-x86-64
+
+      - name: LibreWolf Windows paketini indir
+        run: curl -fL --retry 3 -o librewolf-win.zip "${{ steps.latest.outputs.windows_url }}"
+
+      - name: Marmara'yı Windows için derle
+        run: ./build.sh librewolf-win.zip --tarball --offline
+
+      - name: Paketi sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: marmara-windows
+          path: dist/marmara-*-windows-x86_64.zip
+          if-no-files-found: error
+
+  test:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: marmara-windows
+
+      - name: Aç ve başlat
+        shell: pwsh
+        run: |
+          $zip = Get-ChildItem marmara-*-windows-x86_64.zip | Select-Object -First 1
+          Expand-Archive $zip.FullName -DestinationPath app
+          $dir = (Resolve-Path app/marmara).Path
+          Get-ChildItem $dir | Select-Object -First 80 | Format-Table Name, Length | Out-String | Write-Host
+          $profile_dir = Join-Path $env:RUNNER_TEMP "marmara-profile"
+          New-Item -ItemType Directory -Force $profile_dir | Out-Null
+          # Başlatıcıyı atlayıp doğrudan -app ile çalıştır: açılıyor mu, çöküyor mu?
+          $p = Start-Process -FilePath "$dir\marmara-bin.exe" `
+            -ArgumentList @("-app", "$dir\browser\application.ini", "--headless", "-no-remote", "-profile", $profile_dir) `
+            -PassThru
+          Start-Sleep -Seconds 25
+          if ($p.HasExited) {
+            Write-Host "::error::Marmara başlangıçta kapandı (çıkış kodu $($p.ExitCode))"
+            exit 1
+          }
+          Write-Host "Marmara 25 saniye sonra hâlâ çalışıyor."
+          Get-ChildItem $profile_dir | Select-Object Name | Out-String | Write-Host
+          if (-not (Test-Path "$profile_dir\prefs.js")) {
+            Write-Host "::error::Profil oluşmadı (prefs.js yok)"
+            exit 1
+          }
+          Stop-Process -Id $p.Id -Force
+
+      - name: Başlatıcı (marmara.exe) Marmara'yı açıyor mu?
+        shell: pwsh
+        run: |
+          $dir = (Resolve-Path app/marmara).Path
+          & "$dir\marmara.exe" --headless -no-remote -profile "$env:RUNNER_TEMP\marmara-profile2"
+          Start-Sleep -Seconds 20
+          $running = Get-Process marmara-bin -ErrorAction SilentlyContinue
+          if (-not $running) {
+            Write-Host "::error::marmara.exe, marmara-bin.exe'yi başlatamadı"
+            exit 1
+          }
+          Write-Host "Başlatıcı çalışıyor."
+          $running | Stop-Process -Force

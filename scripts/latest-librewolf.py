@@ -5,6 +5,7 @@
     version=158.0.1
     tag=158.0.1-2
     url=https://dl.librewolf.net/librewolf/158.0.1-2/librewolf-158.0.1-2-linux-x86_64-package.tar.xz
+    windows_url=https://dl.librewolf.net/librewolf/158.0.1-2/librewolf-158.0.1-2-windows-x86_64-package.zip
 
 LibreWolf sürümleri LibreWolf Forge'da (librewolf.dev/librewolf/bsys6) yayımlanır;
 dosyalar dl.librewolf.net'ten indirilir. Etiketler "<firefox sürümü>-<yapı no>" biçimindedir.
@@ -18,6 +19,7 @@ import urllib.request
 API = "https://librewolf.dev/api/v1/repos/librewolf/bsys6/releases?limit=20"
 PAGE = "https://librewolf.dev/librewolf/bsys6/releases"
 DOWNLOAD = "https://dl.librewolf.net/librewolf/{tag}/librewolf-{tag}-linux-x86_64-package.tar.xz"
+DOWNLOAD_WINDOWS = "https://dl.librewolf.net/librewolf/{tag}/librewolf-{tag}-windows-x86_64-package.zip"
 TAG = re.compile(r"^(\d+(?:\.\d+)*)-(\d+)$")
 
 
@@ -60,6 +62,7 @@ def main() -> int:
     print(f"version={version}")
     print(f"tag={tag}")
     print(f"url={DOWNLOAD.format(tag=tag)}")
+    print(f"windows_url={DOWNLOAD_WINDOWS.format(tag=tag)}")
     return 0
 
 

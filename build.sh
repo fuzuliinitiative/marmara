@@ -4,14 +4,17 @@
 # Kullanım:
 #   ./build.sh                       # kurulu LibreWolf'tan (/usr/lib/librewolf)
 #   ./build.sh librewolf-*.tar.xz    # LibreWolf'un resmi Linux arşivinden
+#   ./build.sh librewolf-*.zip       # LibreWolf'un resmi Windows arşivinden (Windows paketi üretir)
 #   ./build.sh /yol/librewolf        # başka bir LibreWolf klasöründen
 #
 # Seçenekler:
 #   --offline    Eklenti kimliklerini addons.mozilla.org'dan doğrulama
-#   --tarball    Sonuçtan ayrıca dist/marmara-<sürüm>-linux-x86_64.tar.xz üret
+#   --tarball    Sonuçtan ayrıca arşiv üret: Linux'ta dist/marmara-<sürüm>-linux-x86_64.tar.xz,
+#                Windows'ta dist/marmara-<sürüm>-windows-x86_64.zip
 #   --debug-tabs Sekme çubuğundaki kutuları renklendirir (boşluk teşhisi için)
 #
-# Çıktı: dist/marmara/  →  ./dist/marmara/marmara ile doğrudan çalıştırılabilir.
+# Çıktı: dist/marmara/  →  Linux'ta ./dist/marmara/marmara, Windows'ta marmara.exe
+#        ile doğrudan çalıştırılabilir.
 # Derleme yapılmaz; LibreWolf'un hazır dosyaları değiştirilip yeniden paketlenir.
 
 set -euo pipefail
@@ -28,7 +31,7 @@ for arg in "$@"; do
     --offline) OFFLINE="--offline" ;;
     --tarball) TARBALL=1 ;;
     --debug-tabs) export MARMARA_DEBUG_TABS=1 ;;
-    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,17p' "$0"; exit 0 ;;
     *) SRC="$arg" ;;
   esac
 done
@@ -65,16 +68,28 @@ step "Kaynak hazırlanıyor: $SRC"
 rm -rf "$WORK" "$OUT"
 mkdir -p "$WORK" "$(dirname "$OUT")"
 
+PLATFORM=linux
 if [ -f "$SRC" ]; then
   mkdir -p "$WORK/src"
-  tar -xf "$SRC" -C "$WORK/src"
-  SRC_DIR="$(dirname "$(find "$WORK/src" -maxdepth 3 -type f -name librewolf -perm -u+x | head -n1)")"
-  [ -n "$SRC_DIR" ] && [ "$SRC_DIR" != "." ] || die "arşivde 'librewolf' çalıştırılabilir dosyası bulunamadı"
+  case "$SRC" in
+    *.zip)
+      unzip -q "$SRC" -d "$WORK/src"
+      SRC_DIR="$(dirname "$(find "$WORK/src" -maxdepth 3 -type f -name librewolf.exe | head -n1)")"
+      [ -n "$SRC_DIR" ] && [ "$SRC_DIR" != "." ] || die "arşivde 'librewolf.exe' bulunamadı"
+      ;;
+    *)
+      tar -xf "$SRC" -C "$WORK/src"
+      SRC_DIR="$(dirname "$(find "$WORK/src" -maxdepth 3 -type f -name librewolf -perm -u+x | head -n1)")"
+      [ -n "$SRC_DIR" ] && [ "$SRC_DIR" != "." ] || die "arşivde 'librewolf' çalıştırılabilir dosyası bulunamadı"
+      ;;
+  esac
 elif [ -d "$SRC" ]; then
   SRC_DIR="$SRC"
 else
   die "kaynak bulunamadı: $SRC (LibreWolf kurulu mu? sudo pacman -S librewolf)"
 fi
+[ -f "$SRC_DIR/librewolf.exe" ] && PLATFORM=windows
+echo "  Platform: $PLATFORM"
 [ -f "$SRC_DIR/browser/omni.ja" ] && [ -f "$SRC_DIR/omni.ja" ] || die "$SRC_DIR bir LibreWolf kurulumu gibi görünmüyor"
 
 cp -a "$SRC_DIR" "$OUT"
@@ -88,9 +103,18 @@ echo "  LibreWolf sürümü: $VERSION (tema en son $TESTED ile denendi)"
 
 # ---------------------------------------------------------------------------
 step "Dosya adları değiştiriliyor"
-mv "$OUT/librewolf" "$OUT/marmara-bin"
-rm -f "$OUT/librewolf-bin" "$OUT/librewolf.cfg" "$OUT/application.ini"
-echo "  librewolf → marmara-bin"
+if [ "$PLATFORM" = windows ]; then
+  mv "$OUT/librewolf.exe" "$OUT/marmara-bin.exe"
+  rm -f "$OUT/librewolf.cfg" "$OUT/application.ini"
+  # LibreWolf'a bağlı yardımcılar ve Başlat menüsü kutucukları: Marmara'da işe yaramaz
+  rm -rf "$OUT/private_browsing.exe" "$OUT/uninstall" "$OUT/desktop-launcher" \
+         "$OUT"/*.VisualElementsManifest.xml "$OUT/browser/VisualElements"
+  echo "  librewolf.exe → marmara-bin.exe"
+else
+  mv "$OUT/librewolf" "$OUT/marmara-bin"
+  rm -f "$OUT/librewolf-bin" "$OUT/librewolf.cfg" "$OUT/application.ini"
+  echo "  librewolf → marmara-bin"
+fi
 
 # ---------------------------------------------------------------------------
 step "omni.ja dosyaları açılıyor"
@@ -128,12 +152,30 @@ echo "  browser/application.ini (BuildID $BUILDID)"
 
 # ---------------------------------------------------------------------------
 step "Simgeler ve başlatıcı"
-for s in 16 32 48 64 128; do
-  cp "$ROOT/branding/icons/icon$s.png" "$OUT/browser/chrome/icons/default/default$s.png"
-done
+if [ -d "$OUT/browser/chrome/icons/default" ]; then
+  for s in 16 32 48 64 128; do
+    cp "$ROOT/branding/icons/icon$s.png" "$OUT/browser/chrome/icons/default/default$s.png"
+  done
+fi
 install -Dm644 "$ROOT/branding/marmara.svg" "$OUT/marmara.svg"
-install -Dm755 "$ROOT/packaging/linux/marmara" "$OUT/marmara"
-install -Dm644 "$ROOT/packaging/linux/marmara.desktop" "$OUT/marmara.desktop"
+if [ "$PLATFORM" = windows ]; then
+  MINGW="x86_64-w64-mingw32"
+  for tool in "$MINGW-gcc" "$MINGW-windres"; do
+    command -v "$tool" >/dev/null || die "'$tool' bulunamadı. Debian/Ubuntu: sudo apt install gcc-mingw-w64-x86-64"
+  done
+  mkdir -p "$WORK/launcher"
+  python3 -I "$ROOT/scripts/make_ico.py" "$WORK/launcher/marmara.ico" \
+    "$ROOT"/branding/icons/icon{16,32,48,64,128,256}.png
+  cp "$ROOT/packaging/windows/marmara.rc" "$ROOT/packaging/windows/launcher.c" "$WORK/launcher/"
+  (cd "$WORK/launcher" &&
+    "$MINGW-windres" marmara.rc -O coff -o marmara-res.o &&
+    "$MINGW-gcc" -Os -municode -mwindows -o "$OUT/marmara.exe" launcher.c marmara-res.o -static -s)
+  [ -f "$OUT/marmara.exe" ] || die "marmara.exe derlenemedi"
+  echo "  marmara.exe (başlatıcı)"
+else
+  install -Dm755 "$ROOT/packaging/linux/marmara" "$OUT/marmara"
+  install -Dm644 "$ROOT/packaging/linux/marmara.desktop" "$OUT/marmara.desktop"
+fi
 echo "  tamam"
 
 # ---------------------------------------------------------------------------
@@ -149,11 +191,21 @@ fi
 
 if [ "$TARBALL" = 1 ]; then
   step "Arşiv oluşturuluyor"
-  tar -C "$(dirname "$OUT")" -cJf "$ROOT/dist/marmara-$VERSION-linux-x86_64.tar.xz" marmara
-  echo "  dist/marmara-$VERSION-linux-x86_64.tar.xz"
+  if [ "$PLATFORM" = windows ]; then
+    rm -f "$ROOT/dist/marmara-$VERSION-windows-x86_64.zip"
+    (cd "$(dirname "$OUT")" && zip -qr9 "$ROOT/dist/marmara-$VERSION-windows-x86_64.zip" marmara)
+    echo "  dist/marmara-$VERSION-windows-x86_64.zip"
+  else
+    tar -C "$(dirname "$OUT")" -cJf "$ROOT/dist/marmara-$VERSION-linux-x86_64.tar.xz" marmara
+    echo "  dist/marmara-$VERSION-linux-x86_64.tar.xz"
+  fi
 fi
 
 rm -rf "$WORK"
 step "Bitti"
-echo "  Çalıştırmak için:        $OUT/marmara"
-echo "  Menüye eklemek için:     $ROOT/scripts/install-local.sh"
+if [ "$PLATFORM" = windows ]; then
+  echo "  Çalıştırmak için:        $OUT/marmara.exe (Windows'ta)"
+else
+  echo "  Çalıştırmak için:        $OUT/marmara"
+  echo "  Menüye eklemek için:     $ROOT/scripts/install-local.sh"
+fi
