@@ -246,3 +246,4 @@ export const MarmaraAbout = {
     new AboutDialog(win).open();
   },
 };
+// Marmara hakkında penceresi
