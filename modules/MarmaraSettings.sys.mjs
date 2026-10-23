@@ -33,10 +33,10 @@ const PREF_DARK = "ui.systemUsesDarkTheme";
 const PREF_CONTENT_SCHEME = "layout.css.prefers-color-scheme.content-override";
 const PREF_LOCALE = "intl.locale.requested";
 
-// Güncelleme denetimi: yalnızca kullanıcı düğmeye basınca GitLab'a tek bir istek gider.
-// Marmara'nın GitLab proje yolu ("kullanıcı/proje"). Boşsa güncelleme grubu gizlenir.
-// En son sürüm, projenin en son "release"inin etiketidir ("v1.1" ya da "1.1").
-const GITLAB_PROJECT = "fuzuli/marmara";
+// Güncelleme denetimi: yalnızca kullanıcı düğmeye basınca GitHub'a tek bir istek gider.
+// Marmara'nın GitHub proje yolu ("kullanıcı/proje"). Boşsa güncelleme grubu gizlenir.
+// En son sürüm, projenin en son release'inin etiketidir ("v1.1" ya da "1.1").
+const GITHUB_PROJECT = "";
 const UPDATE_TIMEOUT_MS = 10000;
 
 // Arayüz dilleri (Marmara yalnızca bunları taşır). Değer: intl.locale.requested.
@@ -251,7 +251,7 @@ async function fetchLatest(win) {
   const timer = win.setTimeout(() => controller.abort(), UPDATE_TIMEOUT_MS);
   let info;
   try {
-    const response = await win.fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(GITLAB_PROJECT)}/releases/permalink/latest`, {
+    const response = await win.fetch(`https://api.github.com/repos/${GITHUB_PROJECT}/releases/latest`, {
       cache: "no-store",
       credentials: "omit",
       signal: controller.signal,
@@ -267,7 +267,7 @@ async function fetchLatest(win) {
   if (!/^\d+(\.\d+)*$/.test(version)) {
     throw new Error("geçersiz sürüm etiketi");
   }
-  return { version, url: `https://gitlab.com/${GITLAB_PROJECT}/-/releases` };
+  return { version, url: `https://github.com/${GITHUB_PROJECT}/releases/latest` };
 }
 
 function restartBrowser() {
@@ -335,7 +335,7 @@ const PAGES = [
       },
       {
         k: "updates",
-        show: () => !!GITLAB_PROJECT,
+        show: () => !!GITHUB_PROJECT,
         rows: [{ type: "update", k: "update" }],
       },
       {

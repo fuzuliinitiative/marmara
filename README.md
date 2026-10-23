@@ -79,24 +79,18 @@ sudo pacman -Syu librewolf
 Çıktıda "HATA" ya da tema kontrolünde ✗ yoksa sürüm sorunsuzdur.
 `LIBREWOLF_VERSION` dosyasını yeni sürüm numarasıyla güncelleyin.
 
-### Otomatik (GitLab CI)
+### Otomatik (GitHub Actions)
 
-`.gitlab-ci.yml` LibreWolf'un yeni sürümünü zamanlanmış olarak kontrol eder. Yeni
-sürüm varsa Marmara'yı onunla derler; başarılıysa Marmara'nın son basamağını
-artırır (`VERSION`), Linux arşivini paket deposuna yükler ve `vX.Y.Z` etiketli bir
-release açar. Yamalar yeni Firefox yapısıyla uyuşmazsa bir issue açar.
+Kod GitLab'da durur; derleme ve release için aynı depo GitHub'a da gönderilir
+(`git push` ikisine birden gider). `.github/workflows/librewolf-update.yml`
+LibreWolf'un yeni sürümünü her 6 saatte bir kontrol eder. Yeni sürüm varsa Marmara'yı
+onunla derler ve bir sonraki sürüm numarasıyla (1.0 → 1.0.1) GitHub release'i açar;
+Linux arşivi release'e eklenir. Yamalar yeni Firefox yapısıyla uyuşmazsa bir issue açar.
+Depoya geri yazmaz.
 
-Kurulum (bir kez):
-
-1. **Settings → Access tokens:** rol *Maintainer*, kapsamlar `api` ve
-   `write_repository` olan bir proje belirteci oluşturun.
-2. **Settings → CI/CD → Variables:** `GITLAB_TOKEN` adıyla ekleyin
-   (*Masked* ve *Protected* işaretli).
-3. **Build → Pipeline schedules → New schedule:** aralık `17 */6 * * *`,
-   dal `main`.
-4. `modules/MarmaraSettings.sys.mjs` içindeki `GITLAB_PROJECT` değerine
-   proje yolunu (`kullanici/marmara`) yazın; Ayarlar'daki "Güncellemeler"
-   grubu böylece açılır.
+Tarayıcıdaki Ayarlar > Genel > Güncellemeler en son GitHub release'ine bakar.
+`modules/MarmaraSettings.sys.mjs` içindeki `GITHUB_PROJECT` değerine GitHub
+yolunu (`kullanici/marmara`) yazın; grup böylece açılır.
 
 Sürüm numarasını elle değiştirmek için `scripts/bump-version.sh 1.1`
 (VERSION, Hakkında kutusu, distribution.ini ve .desktop dosyasını birlikte günceller).

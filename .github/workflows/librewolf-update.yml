@@ -1,0 +1,89 @@
+# LibreWolf'un yeni sürümünü izler; Marmara'yı onunla yeniden derler.
+#
+#  - En son release'in notundaki "librewolf: <sürüm>" satırı en son LibreWolf'la
+#    aynıysa hiçbir şey yapmaz.
+#  - Yeniyse Marmara'yı derler, bir sonraki sürüm numarasıyla (1.0 → 1.0.1)
+#    release açar ve Linux arşivini ekler. Depoya geri yazmaz.
+#  - Yamalar yeni Firefox yapısıyla uyuşmazsa "LibreWolf <sürüm> ile derleme
+#    başarısız" issue'su açar.
+#
+# Bu dosya GitHub'da .github/workflows/ altında durmalı.
+
+name: LibreWolf güncellemesi
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: En son LibreWolf sürümünü bul
+        id: latest
+        run: python3 scripts/latest-librewolf.py | tee -a "$GITHUB_OUTPUT"
+
+      - name: Bu sürüm zaten yayımlandı mı?
+        id: check
+        run: |
+          tag="$(gh release list --limit 1 --json tagName --jq '.[0].tagName // ""')"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          notes=""
+          [ -n "$tag" ] && notes="$(gh release view "$tag" --json body --jq .body)"
+          if printf '%s\n' "$notes" | grep -qx "librewolf: ${{ steps.latest.outputs.version }}"; then
+            echo "new=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Gerekli araçlar
+        if: steps.check.outputs.new == 'true'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends python3 unzip zip xz-utils
+
+      - name: LibreWolf'u indir
+        if: steps.check.outputs.new == 'true'
+        run: curl -fL --retry 3 -o librewolf.tar.xz "${{ steps.latest.outputs.url }}"
+
+      - name: Sürüm numarasını belirle
+        id: version
+        if: steps.check.outputs.new == 'true'
+        run: |
+          new="$(python3 scripts/next-version.py VERSION "${{ steps.check.outputs.tag }}")"
+          scripts/bump-version.sh "$new"
+          echo "marmara=$new" >> "$GITHUB_OUTPUT"
+
+      - name: Marmara'yı derle
+        id: build
+        if: steps.check.outputs.new == 'true'
+        run: ./build.sh librewolf.tar.xz --tarball --offline
+
+      - name: Release aç
+        if: steps.check.outputs.new == 'true' && steps.build.outcome == 'success'
+        env:
+          LW: ${{ steps.latest.outputs.version }}
+          NEW: ${{ steps.version.outputs.marmara }}
+        run: |
+          file="marmara-$NEW-linux-x86_64.tar.xz"
+          cp "dist/marmara-$LW-linux-x86_64.tar.xz" "$file"
+          printf 'LibreWolf %s üzerine otomatik derlendi.\n\nlibrewolf: %s\n' "$LW" "$LW" > notes.md
+          gh release create "v$NEW" "$file" --title "Marmara $NEW" --notes-file notes.md
+
+      - name: Derleme başarısızsa issue aç
+        if: failure() && steps.build.outcome == 'failure'
+        env:
+          LW: ${{ steps.latest.outputs.version }}
+        run: |
+          title="LibreWolf $LW ile derleme başarısız"
+          if [ -z "$(gh issue list --state open --search "$title in:title" --json number --jq '.[]')" ]; then
+            gh issue create --title "$title" \
+              --body "Otomatik derleme başarısız oldu; yamalar yeni Firefox yapısıyla uyuşmuyor olabilir. Ayrıntı: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          fi
