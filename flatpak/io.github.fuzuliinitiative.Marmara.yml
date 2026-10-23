@@ -31,7 +31,6 @@ finish-args:
   - --persist=.marmara
   - --filesystem=xdg-download
   - --filesystem=xdg-run/speech-dispatcher:ro
-  - --filesystem=xdg-config/gtk-3.0:ro
   - --env=MOZ_ENABLE_WAYLAND=1
   - --env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share
   - --env=DICPATH=/usr/share/hunspell
