@@ -95,6 +95,28 @@ yolunu (`kullanici/marmara`) yazın; grup böylece açılır.
 Sürüm numarasını elle değiştirmek için `scripts/bump-version.sh 1.1`
 (VERSION, Hakkında kutusu, distribution.ini ve .desktop dosyasını birlikte günceller).
 
+## Flatpak
+
+`flatpak/` klasörü Marmara'nın Flatpak paketini içerir (uygulama kimliği
+`io.github.fuzuliinitiative.Marmara`). Paket, GitHub release'indeki hazır Linux
+arşivini kullanır; derleme yapmaz.
+
+Yerelde denemek için:
+
+```sh
+sha256sum marmara-1.0-linux-x86_64.tar.xz   # release'ten indirilen arşiv; çıktıyı manifestteki sha256'ya yazın
+flatpak install flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.mozilla.firefox.BaseApp//25.08
+cd flatpak
+flatpak-builder --user --install --force-clean build-dir io.github.fuzuliinitiative.Marmara.yml
+flatpak run io.github.fuzuliinitiative.Marmara
+```
+
+Flathub'a yüklemek için: gerçek ekran görüntüleri çekip `flatpak/screenshot-*.png`
+olarak ekleyin, metainfo'daki yorum satırını açın ve
+[Flathub başvuru kılavuzunu](https://docs.flathub.org/docs/for-app-authors/submission)
+izleyin. Kabul edilince yeni release'ler `x-checker-data` sayesinde otomatik güncelleme
+isteği (PR) olarak gelir.
+
 ## Lisans ve marka
 
 Marmara'nın kendi dosyaları ve LibreWolf/Firefox'tan değiştirilen dosyalar

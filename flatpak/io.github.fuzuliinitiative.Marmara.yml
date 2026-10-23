@@ -1,0 +1,72 @@
+# Marmara Flatpak
+#
+# Marmara'nın GitHub release'indeki hazır Linux arşivini paketler (derleme yapmaz),
+# tıpkı Flathub'daki Firefox ve LibreWolf gibi. Yeni release çıkınca
+# flatpak-external-data-checker (x-checker-data) adres ve sha256'yı kendi günceller.
+#
+# Yerel deneme:
+#   flatpak install flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 \
+#                           org.mozilla.firefox.BaseApp//25.08
+#   flatpak-builder --user --install --force-clean build-dir io.github.fuzuliinitiative.Marmara.yml
+#   flatpak run io.github.fuzuliinitiative.Marmara
+
+app-id: io.github.fuzuliinitiative.Marmara
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+base: org.mozilla.firefox.BaseApp
+base-version: "25.08"
+command: marmara
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --socket=cups
+  - --socket=pcsc
+  - --device=dri
+  # Profil klasörü (~/.marmara)
+  - --persist=.marmara
+  - --filesystem=xdg-download
+  - --filesystem=xdg-run/speech-dispatcher:ro
+  - --filesystem=xdg-config/gtk-3.0:ro
+  - --env=MOZ_ENABLE_WAYLAND=1
+  - --env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share
+  - --env=DICPATH=/usr/share/hunspell
+  - --env=MOZ_USE_XINPUT2=1
+  - --talk-name=org.freedesktop.FileManager1
+  - --talk-name=org.gtk.vfs.*
+  - --system-talk-name=org.freedesktop.NetworkManager
+  - --talk-name=org.a11y.Bus
+  - --own-name=org.mozilla.marmara.*
+  - --own-name=org.mpris.MediaPlayer2.firefox.*
+
+modules:
+  - name: marmara
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/lib && mv marmara /app/lib/marmara
+      - install -Dm755 marmara.sh /app/bin/marmara
+      - install -Dm644 io.github.fuzuliinitiative.Marmara.desktop -t /app/share/applications
+      - install -Dm644 io.github.fuzuliinitiative.Marmara.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 /app/lib/marmara/marmara.svg /app/share/icons/hicolor/scalable/apps/io.github.fuzuliinitiative.Marmara.svg
+      # Arşivdeki çalıştırılabilir başlatıcı, Flatpak içinde /app/bin/marmara üzerinden çağrılır
+    sources:
+      - type: archive
+        url: https://github.com/fuzuliinitiative/marmara/releases/download/v1.0/marmara-1.0-linux-x86_64.tar.xz
+        sha256: a11c41ccdb721f423a37c9119a1754d63c5ee0d418a778ac9f2ce5c5e01daa35
+        only-arches: [x86_64]
+        strip-components: 0
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/fuzuliinitiative/marmara/releases/latest
+          version-query: .tag_name | sub("^v"; "")
+          url-query: .assets[] | select(.name=="marmara-" + $version + "-linux-x86_64.tar.xz") | .browser_download_url
+      - type: file
+        path: marmara.sh
+      - type: file
+        path: io.github.fuzuliinitiative.Marmara.desktop
+      - type: file
+        path: io.github.fuzuliinitiative.Marmara.metainfo.xml
