@@ -246,17 +246,6 @@ jobs:
           Stop-Process -Id $p.Id -Force
           Start-Sleep -Seconds 3
 
-      - name: Kaldır
-        shell: pwsh
-        run: |
-          $dir = Join-Path $env:LOCALAPPDATA "Programs\Marmara"
-          # _?= ile kaldırıcı kendini kopyalamadan, bitene kadar bekler
-          Start-Process "$dir\uninstall.exe" -ArgumentList "/S", "_?=$dir" -Wait
-          if (Test-Path "$dir\marmara-bin.exe") { Write-Host "::error::Kaldırma dosyaları silmedi"; exit 1 }
-          if (Test-Path (Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Marmara.lnk")) { Write-Host "::error::Başlat menüsü kısayolu silinmedi"; exit 1 }
-          if (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Marmara") { Write-Host "::error::Kaldırma kaydı silinmedi"; exit 1 }
-          Write-Host "Kaldırma temiz."
-
       - name: Güncelleme denemesi (Marmara açıkken üzerine kur)
         shell: pwsh
         run: |
@@ -280,3 +269,14 @@ jobs:
           if (-not $again) { Write-Host "::error::Güncellemeden sonra Marmara yeniden açılmadı"; exit 1 }
           Write-Host "Güncelleme sonrası yeniden açıldı."
           $again | Stop-Process -Force
+
+      - name: Kaldır
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:LOCALAPPDATA "Programs\Marmara"
+          # _?= ile kaldırıcı kendini kopyalamadan, bitene kadar bekler
+          Start-Process "$dir\uninstall.exe" -ArgumentList "/S", "_?=$dir" -Wait
+          if (Test-Path "$dir\marmara-bin.exe") { Write-Host "::error::Kaldırma dosyaları silmedi"; exit 1 }
+          if (Test-Path (Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Marmara.lnk")) { Write-Host "::error::Başlat menüsü kısayolu silinmedi"; exit 1 }
+          if (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Marmara") { Write-Host "::error::Kaldırma kaydı silinmedi"; exit 1 }
+          Write-Host "Kaldırma temiz."
