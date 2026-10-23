@@ -57,7 +57,15 @@ jobs:
           echo "Marmara sürümü: $version"
 
       - name: Gerekli araçlar
-        run: sudo apt-get -o Acquire::Retries=5 update && sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends python3 unzip zip gcc-mingw-w64-x86-64
+        run: |
+          # Yansı sunucusu bazen takılıyor: her denemeye süre sınırı koy, 3 kez dene
+          for i in 1 2 3; do
+            sudo timeout 240 apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 update \
+              && sudo timeout 300 apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 install -y --no-install-recommends python3 unzip zip gcc-mingw-w64-x86-64 \
+              && break
+            echo "apt denemesi $i başarısız, tekrar deneniyor"; sleep 5
+            [ "$i" = 3 ] && exit 1
+          done
 
       - name: LibreWolf Windows paketini indir
         run: curl -fL --retry 3 -o librewolf-win.zip "${{ steps.ver.outputs.url }}"
@@ -177,7 +185,15 @@ jobs:
           name: marmara-windows-final
 
       - name: Gerekli araçlar
-        run: sudo apt-get -o Acquire::Retries=5 update && sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends python3 unzip nsis
+        run: |
+          # Yansı sunucusu bazen takılıyor: her denemeye süre sınırı koy, 3 kez dene
+          for i in 1 2 3; do
+            sudo timeout 240 apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 update \
+              && sudo timeout 300 apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 install -y --no-install-recommends python3 unzip nsis \
+              && break
+            echo "apt denemesi $i başarısız, tekrar deneniyor"; sleep 5
+            [ "$i" = 3 ] && exit 1
+          done
 
       - name: Kurulum sihirbazını derle
         run: |
