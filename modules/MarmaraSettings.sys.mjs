@@ -289,7 +289,73 @@ async function fetchLatest(win) {
   if (!/^\d+(\.\d+)*$/.test(version)) {
     throw new Error("geçersiz sürüm etiketi");
   }
-  return { version, url: `https://github.com/${GITHUB_PROJECT}/releases/latest` };
+  // Windows'ta kurulum sihirbazı sürüme eklenmişse doğrudan indirilip kurulabilir
+  const asset = (info.assets ?? []).find(a => /-windows-x86_64-setup\.exe$/.test(a?.name ?? ""));
+  const installer =
+    asset && String(asset.browser_download_url).startsWith(`https://github.com/${GITHUB_PROJECT}/releases/download/`)
+      ? { url: asset.browser_download_url, sha256: /^sha256:([0-9a-f]{64})$/.exec(asset.digest ?? "")?.[1] ?? null }
+      : null;
+  return { version, url: `https://github.com/${GITHUB_PROJECT}/releases/latest`, installer };
+}
+
+/**
+ * Tek tıkla güncelleme yalnızca Windows'ta, Marmara kurulum sihirbazıyla
+ * kurulmuşsa (uninstall.exe yanında) yapılır; zip'ten açılmış kopyada yalnızca
+ * sürüm sayfası açılır.
+ */
+function canSelfUpdate() {
+  if (AppConstants.platform != "win") {
+    return false;
+  }
+  try {
+    const exe = Services.dirsvc.get("XREExeF", Ci.nsIFile);
+    const uninstaller = exe.parent.clone();
+    uninstaller.append("uninstall.exe");
+    return uninstaller.exists();
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Kurulum sihirbazını indirir (onProgress(0..1)), sağlama toplamını doğrular, dosya yolunu döndürür */
+async function downloadInstaller(installer, onProgress) {
+  const { Downloads } = ChromeUtils.importESModule("resource://gre/modules/Downloads.sys.mjs");
+  const target = PathUtils.join(PathUtils.tempDir, "Marmara-Setup-update.exe");
+  await IOUtils.remove(target, { ignoreAbsent: true });
+  const download = await Downloads.createDownload({
+    source: { url: installer.url, isPrivate: true },
+    target,
+  });
+  download.onchange = () => onProgress(download.progress / 100);
+  await download.start();
+
+  if (installer.sha256) {
+    const file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+    file.initWithPath(target);
+    const stream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
+    stream.init(file, -1, 0, 0);
+    const hash = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
+    hash.init(hash.SHA256);
+    hash.updateFromStream(stream, 0xffffffff);
+    const raw = hash.finish(false);
+    stream.close();
+    const hex = Array.from(raw, c => c.charCodeAt(0).toString(16).padStart(2, "0")).join("");
+    if (hex != installer.sha256) {
+      await IOUtils.remove(target, { ignoreAbsent: true });
+      throw new Error("sağlama toplamı uyuşmuyor");
+    }
+  }
+  return target;
+}
+
+/** Sihirbazı sessizce başlatır; Marmara kapanınca kurar ve yeniden açar */
+function runInstallerAndQuit(path) {
+  const file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+  file.initWithPath(path);
+  const process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+  process.init(file);
+  process.runw(false, ["/S", "/RELAUNCH"], 2);
+  Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit);
 }
 
 function restartBrowser() {
@@ -753,6 +819,8 @@ class SettingsDialog {
     const row = create(this.doc, "div", { className: "marmara-settings-row" }, labels, button);
 
     let downloadUrl = null;
+    let installer = null;
+    let availableVersion = null;
     const setState = (state, args = {}) => {
       status.setAttribute("data-l10n-id", id(`update-${state}`));
       status.setAttribute("data-l10n-args", JSON.stringify(args));
@@ -761,7 +829,7 @@ class SettingsDialog {
         status.setAttribute("data-l10n-id", id("update-available-flatpak"));
         status.setAttribute("data-l10n-args", JSON.stringify({ ...args, command: FLATPAK_UPDATE_COMMAND }));
       }
-      const download = flatpak ? "update-copy-command" : "update-download";
+      const download = flatpak ? "update-copy-command" : installer && canSelfUpdate() ? "update-install" : "update-download";
       button.setAttribute("data-l10n-id", id(state == "available" ? download : "update-check"));
       button.classList.toggle("suggested", state == "available");
       button.disabled = state == "checking";
@@ -781,6 +849,29 @@ class SettingsDialog {
           }
           return;
         }
+        if (installer && canSelfUpdate()) {
+          button.disabled = true;
+          status.setAttribute("data-l10n-id", id("update-downloading"));
+          status.setAttribute("data-l10n-args", JSON.stringify({ percent: 0 }));
+          this.doc.l10n.translateFragment(row);
+          try {
+            const path = await downloadInstaller(installer, fraction => {
+              status.setAttribute("data-l10n-args", JSON.stringify({ percent: Math.round(fraction * 100) }));
+              this.doc.l10n.translateFragment(status);
+            });
+            status.setAttribute("data-l10n-id", id("update-installing"));
+            this.doc.l10n.translateFragment(status);
+            runInstallerAndQuit(path);
+          } catch (e) {
+            console.error("Marmara güncelleme indirme:", e);
+            // Olmazsa elle indirme sayfasına düşer
+            installer = null;
+            button.disabled = false;
+            setState("available", { version: availableVersion });
+            this.win.openTrustedLinkIn(downloadUrl, "tab");
+          }
+          return;
+        }
         this.win.openTrustedLinkIn(downloadUrl, "tab");
         this.close();
         return;
@@ -790,6 +881,8 @@ class SettingsDialog {
         const info = await fetchLatest(this.win);
         if (isNewer(info.version, version)) {
           downloadUrl = info.url;
+          installer = info.installer;
+          availableVersion = info.version;
           setState("available", { version: info.version });
         } else {
           setState("current");

@@ -22,6 +22,7 @@ SetCompressorDictSize 64
 
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
+!include "FileFunc.nsh"
 
 Name "Marmara"
 OutFile "${OUTFILE}"
@@ -48,6 +49,24 @@ BrandingText "Marmara ${VERSION}"
 !insertmacro MUI_LANGUAGE "Turkish"
 
 Section "Marmara" SecMain
+  ; Uygulama içinden güncellemede Marmara kapanana kadar bekle (en çok ~60 sn):
+  ; çalışan marmara-bin.exe açılamaz.
+  StrCpy $1 0
+  wait_loop:
+    IfFileExists "$INSTDIR\marmara-bin.exe" 0 wait_done
+    ClearErrors
+    FileOpen $0 "$INSTDIR\marmara-bin.exe" a
+    IfErrors 0 wait_free
+    IntOp $1 $1 + 1
+    ${If} $1 > 120
+      Abort "Marmara kapatılamadı; lütfen Marmara'yı kapatıp tekrar deneyin."
+    ${EndIf}
+    Sleep 500
+    Goto wait_loop
+  wait_free:
+    FileClose $0
+  wait_done:
+
   SetOutPath "$INSTDIR"
   ; Eski sürümü temizle (profil başka yerde olduğu için güvenli)
   IfFileExists "$INSTDIR\marmara-bin.exe" 0 +2
@@ -71,6 +90,14 @@ Section "Marmara" SecMain
   WriteRegStr HKCU "${UNINSTALL_KEY}" "URLInfoAbout" "https://github.com/fuzuliinitiative/marmara"
   WriteRegDWORD HKCU "${UNINSTALL_KEY}" "NoModify" 1
   WriteRegDWORD HKCU "${UNINSTALL_KEY}" "NoRepair" 1
+
+  ; Uygulama içi güncellemeden geldiyse yeniden aç
+  ${GetParameters} $2
+  ClearErrors
+  ${GetOptions} $2 "/RELAUNCH" $3
+  ${IfNot} ${Errors}
+    Exec '"$INSTDIR\marmara-bin.exe" -app "$INSTDIR\browser\application.ini"'
+  ${EndIf}
 SectionEnd
 
 Section "Uninstall"
