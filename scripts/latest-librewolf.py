@@ -3,34 +3,64 @@
 
 Çıktı (GITHUB_OUTPUT biçiminde, stdout'a):
     version=158.0.1
-    url=https://.../librewolf-158.0.1-1-linux-x86_64-package.tar.xz
+    tag=158.0.1-2
+    url=https://dl.librewolf.net/librewolf/158.0.1-2/librewolf-158.0.1-2-linux-x86_64-package.tar.xz
 
-LibreWolf sürümlerini GitLab'da yayımlıyor (librewolf-community/browser/linux).
-Yayın ya da dosya bulunamazsa sıfırdan farklı kodla çıkar.
+LibreWolf sürümleri LibreWolf Forge'da (librewolf.dev/librewolf/bsys6) yayımlanır;
+dosyalar dl.librewolf.net'ten indirilir. Etiketler "<firefox sürümü>-<yapı no>" biçimindedir.
+Sürüm bulunamazsa sıfırdan farklı kodla çıkar.
 """
 import json
 import re
 import sys
 import urllib.request
 
-API = "https://gitlab.com/api/v4/projects/44042130/releases?per_page=10"
-PATTERN = re.compile(r"librewolf-(\d+(?:\.\d+)*)-\d+-linux-x86_64-package\.tar\.xz$")
+API = "https://librewolf.dev/api/v1/repos/librewolf/bsys6/releases?limit=20"
+PAGE = "https://librewolf.dev/librewolf/bsys6/releases"
+DOWNLOAD = "https://dl.librewolf.net/librewolf/{tag}/librewolf-{tag}-linux-x86_64-package.tar.xz"
+TAG = re.compile(r"^(\d+(?:\.\d+)*)-(\d+)$")
+
+
+def fetch(url: str) -> str:
+    request = urllib.request.Request(url, headers={"User-Agent": "marmara-ci"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return response.read().decode("utf-8", "replace")
+
+
+def tags_from_api() -> list[str]:
+    return [release["tag_name"] for release in json.loads(fetch(API))]
+
+
+def tags_from_page() -> list[str]:
+    return re.findall(r"/releases/tag/(\d+(?:\.\d+)*-\d+)", fetch(PAGE))
 
 
 def main() -> int:
-    with urllib.request.urlopen(API, timeout=30) as resp:
-        releases = json.load(resp)
-    for release in releases:
-        links = release.get("assets", {}).get("links", [])
-        for link in links:
-            name = link.get("name", "") or link.get("url", "")
-            match = PATTERN.search(name) or PATTERN.search(link.get("url", ""))
-            if match:
-                print(f"version={match.group(1)}")
-                print(f"url={link.get('direct_asset_url') or link['url']}")
-                return 0
-    print("LibreWolf Linux paketi bulunamadı", file=sys.stderr)
-    return 1
+    tags: list[str] = []
+    for source in (tags_from_api, tags_from_page):
+        try:
+            tags = source()
+        except Exception as error:  # noqa: BLE001 - bir sonrakini dene
+            print(f"{source.__name__}: {error}", file=sys.stderr)
+        if tags:
+            break
+
+    candidates = []
+    for tag in tags:
+        match = TAG.match(tag)
+        if match:
+            numbers = tuple(int(part) for part in match.group(1).split("."))
+            candidates.append((numbers, int(match.group(2)), tag, match.group(1)))
+    if not candidates:
+        print("LibreWolf sürümü bulunamadı", file=sys.stderr)
+        return 1
+
+    # Sayısal olarak en büyük (sıra listeye güvenilmez)
+    _, _, tag, version = max(candidates)
+    print(f"version={version}")
+    print(f"tag={tag}")
+    print(f"url={DOWNLOAD.format(tag=tag)}")
+    return 0
 
 
 if __name__ == "__main__":

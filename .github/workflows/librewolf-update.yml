@@ -39,7 +39,7 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           notes=""
           [ -n "$tag" ] && notes="$(gh release view "$tag" --json body --jq .body)"
-          if printf '%s\n' "$notes" | grep -qx "librewolf: ${{ steps.latest.outputs.version }}"; then
+          if printf '%s\n' "$notes" | grep -qx "librewolf: ${{ steps.latest.outputs.tag }}"; then
             echo "new=false" >> "$GITHUB_OUTPUT"
           else
             echo "new=true" >> "$GITHUB_OUTPUT"
@@ -70,17 +70,18 @@ jobs:
         if: steps.check.outputs.new == 'true' && steps.build.outcome == 'success'
         env:
           LW: ${{ steps.latest.outputs.version }}
+          TAG: ${{ steps.latest.outputs.tag }}
           NEW: ${{ steps.version.outputs.marmara }}
         run: |
           file="marmara-$NEW-linux-x86_64.tar.xz"
-          cp "dist/marmara-$LW-linux-x86_64.tar.xz" "$file"
-          printf 'LibreWolf %s üzerine otomatik derlendi.\n\nlibrewolf: %s\n' "$LW" "$LW" > notes.md
+          cp dist/marmara-*-linux-x86_64.tar.xz "$file"
+          printf 'LibreWolf %s üzerine otomatik derlendi.\n\nlibrewolf: %s\n' "$TAG" "$TAG" > notes.md
           gh release create "v$NEW" "$file" --title "Marmara $NEW" --notes-file notes.md
 
       - name: Derleme başarısızsa issue aç
         if: failure() && steps.build.outcome == 'failure'
         env:
-          LW: ${{ steps.latest.outputs.version }}
+          LW: ${{ steps.latest.outputs.tag }}
         run: |
           title="LibreWolf $LW ile derleme başarısız"
           if [ -z "$(gh issue list --state open --search "$title in:title" --json number --jq '.[]')" ]; then
