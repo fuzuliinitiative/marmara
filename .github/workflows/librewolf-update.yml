@@ -15,6 +15,11 @@ on:
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
+    inputs:
+      force:
+        description: "LibreWolf aynı olsa da yeni bir Marmara sürümü yayımla (örn. kendi değişikliklerimiz için)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -39,7 +44,7 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           notes=""
           [ -n "$tag" ] && notes="$(gh release view "$tag" --json body --jq .body)"
-          if printf '%s\n' "$notes" | grep -qx "librewolf: ${{ steps.latest.outputs.tag }}"; then
+          if [ "${{ github.event.inputs.force }}" != "true" ] && printf '%s\n' "$notes" | grep -qx "librewolf: ${{ steps.latest.outputs.tag }}"; then
             echo "new=false" >> "$GITHUB_OUTPUT"
           else
             echo "new=true" >> "$GITHUB_OUTPUT"
