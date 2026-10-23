@@ -1,162 +1,99 @@
 # Marmara
 
-GNOME için gizlilik odaklı bir web tarayıcısı. LibreWolf'un (ve dolayısıyla
-Firefox'un) üzerine kurulur, ama derleme gerektirmez. LibreWolf'un hazır
-dosyaları alınır, değiştirilir ve yeniden paketlenir.
+**A private, simple web browser designed after the GNOME Human Interface Guidelines.**
 
-- **Adwaita görünümü:** GNOME Web düzeni (adres çubuğu başlık çubuğunda, sekmeler
-  altında), libadwaita renkleri ve köşeleri, açık/koyu mod, GNOME vurgu rengi.
-- **Hazır eklentiler:** uBlock Origin, Privacy Badger, ClearURLs ve ToS;DR ilk
-  açılışta kendiliğinden kurulur. Gizli pencerelerde de çalışır.
-- **LibreWolf'un gizlilik ayarları:** Telemetri yok, sıkı izleme koruması,
-  yalnızca HTTPS.
-- **Ayrı kimlik:** Kendi adı, logosu, profil klasörü (`~/.marmara`) ve pencere
-  sınıfı var. LibreWolf'la yan yana çalışabilir.
+🇹🇷 [Türkçe](README.tr.md)
 
-## Hızlı başlangıç
+Marmara is built on [LibreWolf](https://librewolf.net) (and so on Firefox). It takes
+LibreWolf's privacy-hardened browser and gives it a clean design that follows the GNOME
+Human Interface Guidelines, simple settings, a few extras and its own name. It is not a from-scratch browser and it does not compile Firefox:
+it repacks LibreWolf's ready-made files, so every new LibreWolf release can become a new
+Marmara release automatically.
 
-```sh
-sudo pacman -S --needed librewolf python unzip zip
-./build.sh                      # /usr/lib/librewolf'tan Marmara üretir → dist/marmara/
-./dist/marmara/marmara          # dene
-./scripts/install-local.sh      # uygulama menüsüne ekle (root gerekmez)
-```
+![Adwaita-style tabs and address bar](flatpak/screenshot-1.png)
 
-LibreWolf'un resmi Linux arşivinden de üretebilirsiniz:
+## Why Marmara
 
-```sh
-./build.sh librewolf-158.0.1-1-linux-x86_64-package.tar.xz --tarball
-```
+- **Private by default.** No telemetry, no tracking, nothing to switch on.
+- **Calm, consistent design.** Marmara follows the GNOME Human Interface Guidelines:
+  clear, uncluttered and familiar, with light and dark modes.
+- **Simple.** Sensible defaults and a small settings window instead of hundreds of options.
+- **Your choice.** Language, theme and search engine are picked by you on first run.
+- **Open.** The code is public and open source.
 
-## Klasörler
+## Features
 
-| Yol | İçerik |
+- **Adwaita-style design:** address bar in the title bar, tabs below, libadwaita
+  colors and corners, light and dark mode, system accent color.
+- **Private by default:** LibreWolf's settings — no telemetry, strict tracking protection,
+  HTTPS-only.
+- **Useful extensions built in:** uBlock Origin, Privacy Badger, ClearURLs and
+  ToS;DR are installed on first run and also work in private windows.
+- **Terms of service at a glance:** the address bar shows the
+  [ToS;DR](https://tosdr.org) rating of the site you are visiting.
+- **Simple settings:** one small Adwaita-style window instead of a long page of
+  options, with search.
+- **First-run welcome:** pick your language, theme and search engine yourself.
+  Nothing is chosen for you.
+- **Its own identity:** own name, logo, profile folder (`~/.marmara`) and window class.
+  It can run next to LibreWolf.
+
+| | |
 |---|---|
-| `build.sh` | Tek komutluk repack betiği |
-| `theme/global/tokens.css` | Genel Adwaita paleti (menüler, paneller, about: sayfaları) |
-| `theme/browser/*.css` | Tarayıcı penceresi: renkler, ölçüler, başlık çubuğu, sekmeler, içerik |
-| `branding/` | Logo (`marmara.svg`), simgeler, marka metinleri |
-| `config/policies.json` | Kurumsal politikalar (LibreWolf'unkilere dayanır) |
-| `config/extensions.json` | Önceden kurulu eklentiler |
-| `config/marmara-prefs.js` | LibreWolf ayarlarının üstüne eklenen Marmara ayarları |
-| `scripts/patch_omni.py` | `omni.ja` içindeki yamalar |
-| `scripts/check_theme.py` | Temanın yeni sürümle uyumunu kontrol eder |
-| `packaging/linux/` | Başlatıcı ve `.desktop` dosyası |
+| ![ToS;DR rating in the address bar](flatpak/screenshot-2.png) | ![Start page in light and dark](flatpak/screenshot-3.png) |
+| ![Compact app menu](flatpak/screenshot-4.png) | |
 
-## Tema nasıl çalışıyor, neden kolay bozulmuyor
+## Install
 
-Firefox kendi renk ve ölçü değerlerini "token" denen CSS değişkenlerinde
-tutuyor ve bunları `@layer` katmanlarına koyuyor. Marmara'nın kuralları katmansız
-olduğu için her zaman onları geçiyor. Temanın büyük kısmı seçicilere değil
-bu token adlarına dayanıyor. Firefox arayüzü yeniden düzenlese bile adlar
-genelde aynı kalıyor.
-
-Seçici kullanan az sayıdaki kural (`headerbar.css`, `tabs.css`, `content.css`)
-ayrı dosyalarda. Biri bozulursa yalnızca o parça etkilenir.
-
-Her derlemede `check_theme.py`, temanın kullandığı her token'ın, kimliğin ve
-sınıfın yeni sürümde hâlâ var olup olmadığını kontrol eder:
-
-```
-==> Tema bu sürüme karşı kontrol ediliyor
-  token'lar:   111/111 kullanımda
-  kimlikler:   10/10 bulundu
-  ...
-```
-
-Bir şey bulunamazsa hangi dosyada geçtiği yazılır.
-
-Bir modülü devre dışı bırakmak için `theme/browser/marmara.css` içindeki ilgili
-`@import` satırını silip yeniden derlemek yeterli.
-
-## Yeni LibreWolf sürümüne geçmek
+### Flatpak (Linux)
 
 ```sh
-sudo pacman -Syu librewolf
-./build.sh
-```
-
-Çıktıda "HATA" ya da tema kontrolünde ✗ yoksa sürüm sorunsuzdur.
-`LIBREWOLF_VERSION` dosyasını yeni sürüm numarasıyla güncelleyin.
-
-### Otomatik (GitHub Actions)
-
-Kod GitLab'da durur; derleme ve release için aynı depo GitHub'a da gönderilir
-(`git push` ikisine birden gider). `.github/workflows/librewolf-update.yml`
-LibreWolf'un yeni sürümünü her 6 saatte bir kontrol eder. Yeni sürüm varsa Marmara'yı
-onunla derler ve bir sonraki sürüm numarasıyla (1.0 → 1.0.1) GitHub release'i açar;
-Linux arşivi release'e eklenir. Yamalar yeni Firefox yapısıyla uyuşmazsa bir issue açar.
-Depoya geri yazmaz.
-
-Tarayıcıdaki Ayarlar > Genel > Güncellemeler en son GitHub release'ine bakar.
-`modules/MarmaraSettings.sys.mjs` içindeki `GITHUB_PROJECT` değerine GitHub
-yolunu (`kullanici/marmara`) yazın; grup böylece açılır.
-
-Sürüm numarasını elle değiştirmek için `scripts/bump-version.sh 1.1`
-(VERSION, Hakkında kutusu, distribution.ini ve .desktop dosyasını birlikte günceller).
-
-## Flatpak
-
-`flatpak/` klasörü Marmara'nın Flatpak paketini içerir (uygulama kimliği
-`io.github.fuzuliinitiative.Marmara`). Paket, GitHub release'indeki hazır Linux
-arşivini kullanır; derleme yapmaz.
-
-Yerelde denemek için:
-
-```sh
-sha256sum marmara-1.0-linux-x86_64.tar.xz   # release'ten indirilen arşiv; çıktıyı manifestteki sha256'ya yazın
-flatpak install flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.mozilla.firefox.BaseApp//25.08
-cd flatpak
-flatpak-builder --user --install --force-clean build-dir io.github.fuzuliinitiative.Marmara.yml
+flatpak remote-add --user marmara https://fuzuliinitiative.github.io/marmara/marmara.flatpakrepo
+flatpak install --user marmara io.github.fuzuliinitiative.Marmara
 flatpak run io.github.fuzuliinitiative.Marmara
 ```
 
-Flathub'a yüklemek için: gerçek ekran görüntüleri çekip `flatpak/screenshot-*.png`
-olarak ekleyin, metainfo'daki yorum satırını açın ve
-[Flathub başvuru kılavuzunu](https://docs.flathub.org/docs/for-app-authors/submission)
-izleyin. Kabul edilince yeni release'ler `x-checker-data` sayesinde otomatik güncelleme
-isteği (PR) olarak gelir.
-
-### Kendi Flatpak depomuz
-
-Flathub yerine Marmara kendi Flatpak deposunu GitHub Pages'te yayımlar
-(`.github/workflows/flatpak-repo.yml`). Her yeni release'te Flatpak yeniden paketlenir,
-GPG ile imzalanır ve `https://fuzuliinitiative.github.io/marmara/` adresine konur.
-
-Kullanıcı kurulumu:
+Update with:
 
 ```sh
-flatpak install --user https://fuzuliinitiative.github.io/marmara/marmara.flatpakref
+flatpak update io.github.fuzuliinitiative.Marmara
 ```
 
-Sonraki güncellemeler yazılım merkezinden (GNOME Software, Bazaar) gelir.
+Marmara tells you in **Settings → General → Updates** when a new version is out.
+The repository is signed; the key is included in `marmara.flatpakrepo`.
 
-Kurulum (bir kez):
+> Marmara is not on Flathub (yet), so software centers like Bazaar will not list it.
+> GNOME Software and the commands above work.
 
-1. İmza anahtarı üretin (parolasız):
-   ```sh
-   gpg --batch --passphrase '' --quick-generate-key "Marmara Flatpak" rsa4096 sign never
-   gpg --armor --export-secret-keys "Marmara Flatpak"
-   ```
-2. GitHub deposunda **Settings → Secrets and variables → Actions → New repository secret**:
-   adı `FLATPAK_GPG_PRIVATE_KEY`, değer yukarıdaki çıktının tamamı
-   (`-----BEGIN PGP PRIVATE KEY BLOCK-----` satırından sona kadar).
-3. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-4. **Actions → Flatpak deposu → Run workflow**.
+### Windows
 
-Gizli anahtarı kimseyle paylaşmayın ve depoya eklemeyin.
+Coming soon.
 
-## Lisans ve marka
+### From the release archive (Linux)
 
-Marmara'nın kendi dosyaları ve LibreWolf/Firefox'tan değiştirilen dosyalar
-[Mozilla Public License 2.0](LICENSE) kapsamındadır. Bu repoyu açık tutmak MPL'in
-kaynak paylaşma şartını karşılar.
+Download `marmara-<version>-linux-x86_64.tar.xz` from the
+[latest release](https://github.com/fuzuliinitiative/marmara/releases/latest), unpack it
+and run `./marmara/marmara`.
 
-**Marmara adı ve logosu MPL kapsamında değildir.** Kodu serbestçe fork'layabilirsiniz,
-ama değiştirilmiş bir sürümü Marmara adıyla ya da Marmara logosuyla yayımlayamazsınız.
-Ayrıntı: [TRADEMARK.md](TRADEMARK.md).
+## Reporting problems
 
-"Firefox" ve "LibreWolf" adları ile logoları Marmara'da marka olarak
-kullanılmaz. Yalnızca nereden türediğini anlatırken anılır. Önceden kurulu
-eklentiler kendi geliştiricilerinindir ve addons.mozilla.org'dan değiştirilmeden
-indirilir.
+Open an [issue](https://github.com/fuzuliinitiative/marmara/issues/new). Marmara's
+**About → Report an issue** button goes to the same place.
+
+## Building it yourself
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+Marmara's own files and the files modified from LibreWolf/Firefox are under the
+[Mozilla Public License 2.0](LICENSE).
+
+**The name "Marmara" and its logo are not covered by that license.** You may fork the
+code freely, but a modified version may not use the Marmara name or logo. See
+[TRADEMARK.md](TRADEMARK.md).
+
+Marmara is not developed or endorsed by Mozilla or the LibreWolf project. "Firefox" and
+"LibreWolf" belong to their owners and are only mentioned to say where Marmara comes
+from. Preinstalled extensions belong to their developers and are downloaded unchanged
+from addons.mozilla.org.

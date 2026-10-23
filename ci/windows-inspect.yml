@@ -1,0 +1,60 @@
+# Geçici: LibreWolf'un Windows paketinin yapısını inceler (derleme yapmaz, release açmaz).
+# Marmara'nın Windows derlemesini yazmadan önce klasör yapısını görmek için.
+#
+# Bu dosya GitHub'da .github/workflows/ altında durmalı. İşi bitince silinebilir.
+
+name: Windows paketini incele
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: En son LibreWolf sürümünün dosyaları
+        id: assets
+        run: |
+          python3 - <<'PY' | tee -a "$GITHUB_OUTPUT"
+          import json, re, urllib.request
+          api = "https://librewolf.dev/api/v1/repos/librewolf/bsys6/releases?limit=20"
+          req = urllib.request.Request(api, headers={"User-Agent": "marmara-ci"})
+          releases = json.load(urllib.request.urlopen(req, timeout=30))
+          tag_re = re.compile(r"^(\d+(?:\.\d+)*)-(\d+)$")
+          best = max((tuple(map(int, m.group(1).split("."))), int(m.group(2)), r)
+                     for r in releases if (m := tag_re.match(r["tag_name"])))
+          rel = best[2]
+          import sys
+          print("Etiket:", rel["tag_name"], file=sys.stderr)
+          for a in rel["assets"]:
+              print("  dosya:", a["name"], a["size"] // 1048576, "MB", file=sys.stderr)
+          print("tag=" + rel["tag_name"])
+          win = [a for a in rel["assets"] if "windows" in a["name"].lower()]
+          print("windows_files=" + ",".join(a["name"] for a in win))
+          pkg = [a for a in win if a["name"].endswith(".zip")]
+          if pkg:
+              print("zip=" + pkg[0]["name"])
+              print("url=" + pkg[0]["browser_download_url"])
+          PY
+
+      - name: Windows zip'ini indir ve aç
+        if: steps.assets.outputs.url != ''
+        run: |
+          curl -fL --retry 3 -o win.zip "${{ steps.assets.outputs.url }}"
+          mkdir win && unzip -q win.zip -d win
+          echo "::group::Klasör yapısı (3 seviye)"
+          find win -maxdepth 3 | sort | head -150
+          echo "::endgroup::"
+          for f in $(find win -maxdepth 3 \( -name 'application.ini' -o -name '*.cfg' -o -name 'local-settings.js' -o -name 'policies.json' -o -name 'distribution.ini' -o -name 'omni.ja' \) | sort); do
+            echo "::group::$f ($(stat -c %s "$f") bayt)"
+            case "$f" in *.ja) ;; *) head -60 "$f" ;; esac
+            echo "::endgroup::"
+          done
+          echo "::group::exe dosyaları"
+          find win -name '*.exe' | sort
+          echo "::endgroup::"
