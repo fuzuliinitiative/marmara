@@ -186,3 +186,4 @@ marmara-settings-update-available = New version available: { $version }
 marmara-settings-update-error = Couldn't check; check your connection
 marmara-settings-update-check = Check
 marmara-settings-update-download = Download
+marmara-settings-update-open-store = Open in Software

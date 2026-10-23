@@ -38,6 +38,7 @@ const PREF_LOCALE = "intl.locale.requested";
 // En son sürüm, projenin en son release'inin etiketidir ("v1.1" ya da "1.1").
 const GITHUB_PROJECT = "fuzuliinitiative/marmara";
 const UPDATE_TIMEOUT_MS = 10000;
+const FLATPAK_ID = "io.github.fuzuliinitiative.Marmara";
 
 // Arayüz dilleri (Marmara yalnızca bunları taşır). Değer: intl.locale.requested.
 const LANGUAGES = [
@@ -132,6 +133,28 @@ function shellService(win) {
     return win.getShellService?.();
   } catch (e) {
     return null;
+  }
+}
+
+function isFlatpak() {
+  try {
+    return Cc["@mozilla.org/gio-service;1"].getService(Ci.nsIGIOService).isRunningUnderFlatpak;
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Yazılım merkezinde (GNOME Software, Bazaar) Marmara'nın sayfasını açar; olmazsa false */
+function openInSoftwareCenter(win) {
+  try {
+    const uri = Services.io.newURI(`appstream://${FLATPAK_ID}`);
+    Cc["@mozilla.org/uriloader/external-protocol-service;1"]
+      .getService(Ci.nsIExternalProtocolService)
+      .loadURI(uri, Services.scriptSecurityManager.getSystemPrincipal(), null, win.browsingContext, false, true);
+    return true;
+  } catch (e) {
+    console.error("Marmara yazılım merkezi:", e);
+    return false;
   }
 }
 
@@ -734,7 +757,8 @@ class SettingsDialog {
     const setState = (state, args = {}) => {
       status.setAttribute("data-l10n-id", id(`update-${state}`));
       status.setAttribute("data-l10n-args", JSON.stringify(args));
-      button.setAttribute("data-l10n-id", id(state == "available" ? "update-download" : "update-check"));
+      const download = isFlatpak() ? "update-open-store" : "update-download";
+      button.setAttribute("data-l10n-id", id(state == "available" ? download : "update-check"));
       button.classList.toggle("suggested", state == "available");
       button.disabled = state == "checking";
       this.doc.l10n.translateFragment(row);
@@ -742,8 +766,11 @@ class SettingsDialog {
 
     button.addEventListener("click", async () => {
       if (downloadUrl) {
+        // Flatpak'ta güncelleme yazılım merkezinden yapılır; açılamazsa release sayfası
+        if (!(isFlatpak() && openInSoftwareCenter(this.win))) {
+          this.win.openTrustedLinkIn(downloadUrl, "tab");
+        }
         this.close();
-        this.win.openTrustedLinkIn(downloadUrl, "tab");
         return;
       }
       setState("checking");

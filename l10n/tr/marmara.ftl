@@ -186,3 +186,4 @@ marmara-settings-update-available = Yeni sürüm var: { $version }
 marmara-settings-update-error = Denetlenemedi; bağlantınızı kontrol edin
 marmara-settings-update-check = Denetle
 marmara-settings-update-download = İndir
+marmara-settings-update-open-store = Yazılım Merkezi'nde aç
