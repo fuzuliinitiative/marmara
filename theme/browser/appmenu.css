@@ -1,0 +1,225 @@
+/* Sade uygulama menüsü (☰), GNOME HIG ve libadwaita popover menülerine göre.
+ * Düzeni modules/MarmaraAppMenu.sys.mjs kuruyor.
+ *
+ * libadwaita ölçüleri: popover iç boşluğu 6px, menü öğesi köşesi 6px,
+ * düz düğmede üzerine gelince currentColor %7, basılıyken %16,
+ * ayraçlar 6px dikey boşluklu tek çizgi, avatarlar AdwAvatar renkleriyle. */
+
+/* ---- Kaldırılan öğeler: üst çubukta ya da Ayarlar'da zaten varlar ---- */
+
+#appMenu-mainView :is(
+  #appMenu-new-tab-button2,
+  #appMenu-new-window-button2,
+  #appMenu-new-ai-window-button,
+  #appMenu-new-classic-window-button,
+  #appMenu-create-profile-button,
+  #appMenu-profiles-button,
+  #appMenu-downloads-button,
+  #appMenu-extensions-themes-button,
+  #appMenu-unified-extensions-button,
+  #appMenu-more-button2,
+  #appMenu-help-button2,
+  #appMenu-referrals-separator,
+  #appMenu-referrals-button,
+  #appMenu-quit-button2,
+  #appMenu-fxa-status2,
+  #appMenu-fxa-sign-in-promo
+) {
+  display: none !important;
+}
+
+#appMenu-mainView[marmara-appmenu] {
+  --mm-menu-pad: 6px;
+
+  > .panel-subview-body {
+    padding: var(--mm-menu-pad);
+  }
+
+  toolbarseparator:not(.marmara-appmenu-separator) {
+    display: none !important;
+  }
+
+  .marmara-appmenu-separator {
+    margin: 6px 0;
+    padding: 0;
+    border-top: 1px solid var(--mm-border);
+    appearance: none;
+    min-height: 0;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  /* Alt satır: Hakkında ve Ayarlar yan yana, yarım genişlikte yuvarlak köşeli kutular */
+  #marmara-appmenu-footer {
+    display: flex;
+    gap: 4px;
+
+    > .subviewbutton {
+      flex: 1 1 0;
+      min-width: 0;
+      margin: 0;
+      padding: 8px 12px;
+      min-height: 36px;
+      justify-content: center;
+      border-radius: 9px;
+      background-color: var(--mm-tile-bg);
+      text-align: center;
+
+      &:not([disabled]):hover { background-color: var(--mm-tile-bg-hover); }
+      &:not([disabled]):hover:active { background-color: var(--mm-tile-bg-active); }
+
+      > .toolbarbutton-icon { display: none; }
+      > .toolbarbutton-text {
+        flex: none;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+      }
+    }
+  }
+}
+
+/* ---- Simge satırları: düz simge düğmeleri ---- */
+
+/* Her simge yuvarlak köşeli bir kutuda (libadwaita "pill"/kart düğmesi):
+ * normalde hafif dolgu, üzerine gelince belirgin, basılıyken daha koyu. */
+#appMenu-mainView[marmara-appmenu] {
+  --mm-tile-bg: color-mix(in srgb, currentColor 8%, transparent);
+  --mm-tile-bg-hover: color-mix(in srgb, currentColor 16%, transparent);
+  --mm-tile-bg-active: color-mix(in srgb, currentColor 26%, transparent);
+}
+
+#marmara-appmenu-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--marmara-grid-columns, 5), 1fr);
+  gap: 6px;
+}
+
+#marmara-appmenu-grid > .subviewbutton {
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  height: 38px;
+  justify-content: center;
+  border-radius: 9px;
+  background-color: var(--mm-tile-bg);
+
+  &:not([disabled]):hover { background-color: var(--mm-tile-bg-hover); }
+  &:not([disabled]):hover:active,
+  &[open] { background-color: var(--mm-tile-bg-active); }
+  &[disabled] { opacity: 0.5; }
+
+  /* Yazılar ve kısayollar gizli; adlar fareyle üzerine gelince ipucunda */
+  > :not(.toolbarbutton-icon, .toolbarbutton-badge-stack) {
+    display: none !important;
+  }
+
+  &::after,
+  &[shortcut]::after,
+  &.subviewbutton-nav::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  > .toolbarbutton-icon {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ---- Yakınlaştırma: etiket, kaydırıcı, yüzde, tam ekran ---- */
+
+#appMenu-zoom-controls {
+  margin: 0;
+  padding: 0 0 0 12px;
+  min-height: 36px;
+  gap: 10px;
+  align-items: center;
+
+  &:hover { background-color: transparent; }
+
+  > #appMenu-zoomReduce-button2,
+  > #appMenu-zoomEnlarge-button2 {
+    display: none;
+  }
+
+  > .toolbarbutton-text {
+    flex: none;
+    padding: 0;
+  }
+
+  /* %100: düz, hap biçimli düğme; tıklayınca sıfırlar */
+  > #appMenu-zoomReset-button2 {
+    margin: 0;
+    padding: 4px 8px;
+    min-width: 52px;
+    min-height: 28px;
+    justify-content: center;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  > #appMenu-fullscreen-button2 {
+    margin: 0;
+    padding: 0;
+    width: 38px;
+    height: 32px;
+    min-height: 0;
+    justify-content: center;
+    border-radius: 9px;
+    background-color: var(--mm-tile-bg);
+    &:hover { background-color: var(--mm-tile-bg-hover); }
+    &:hover:active { background-color: var(--mm-tile-bg-active); }
+  }
+
+  > #appMenu-zoomReset-button2 {
+    background-color: transparent;
+    &:hover { background-color: var(--mm-tile-bg-hover); }
+    &:hover:active { background-color: var(--mm-tile-bg-active); }
+  }
+}
+
+/* GtkScale: ince oluk, vurgu renginde dolgu, beyaz gölgeli tutamak */
+#marmara-zoom-slider {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+
+  &::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: color-mix(in srgb, currentColor 15%, transparent);
+  }
+
+  &::-moz-range-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--mm-accent-bg, AccentColor);
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgb(0 0 6 / 0.1), 0 2px 4px rgb(0 0 6 / 0.25);
+  }
+
+  &:hover::-moz-range-thumb {
+    box-shadow: 0 0 0 1px rgb(0 0 6 / 0.15), 0 2px 6px rgb(0 0 6 / 0.3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    &::-moz-range-thumb { outline: 2px solid var(--focus-outline-color); outline-offset: 1px; }
+  }
+}
+

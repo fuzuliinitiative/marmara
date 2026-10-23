@@ -1,0 +1,188 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+## Marmara: theme choice (Settings > Appearance and about:addons > Themes)
+
+marmara-theme-group =
+    .label = Theme
+    .description = Choose how { -brand-short-name } looks. Websites that support it follow the same theme.
+marmara-theme-auto =
+    .label = System
+    .title = Follow your system’s light or dark style.
+marmara-theme-light =
+    .label = Light
+    .title = Always use the light theme.
+marmara-theme-dark =
+    .label = Dark
+    .title = Always use the dark theme. Websites that support it are shown dark too.
+
+marmara-themes-warning =
+    .heading = Themes can break { -brand-short-name }’s look
+    .message = If you activate any theme, the browser’s layout and appearance may break. Use the option at the top of the page to switch between light and dark.
+
+## Marmara: Terms Rating (ToS;DR) — address bar
+
+# $grade: A–E, $service: name of the service (e.g. YouTube)
+marmara-tosdr-badge =
+    .tooltiptext = Terms rating: { $grade } ({ $service }). Click for details.
+    .aria-label = Terms rating: { $grade }
+marmara-tosdr-grade-label = Grade { $grade }
+marmara-tosdr-grade-a = The terms treat you fairly, respect your rights and won’t abuse your data.
+marmara-tosdr-grade-b = The terms are fair towards you, but could be improved.
+marmara-tosdr-grade-c = The terms are okay, but some issues need your attention.
+marmara-tosdr-grade-d = The terms are very uneven or there are important issues to consider.
+marmara-tosdr-grade-e = The terms raise very serious concerns.
+marmara-tosdr-not-reviewed = Not fully reviewed yet; the grade may change.
+marmara-tosdr-points-heading = Key points
+marmara-tosdr-loading = Loading points…
+marmara-tosdr-error = Couldn’t load the points. ToS;DR can’t be reached.
+marmara-tosdr-no-points = No approved points yet.
+marmara-tosdr-details-link = Details on ToS;DR
+marmara-tosdr-site-info = Connection security and site settings
+marmara-tosdr-privacy = Only the site’s domain name is sent to ToS;DR. Results are kept for this session only; nothing is sent from private windows.
+marmara-tosdr-attribution = Data: ToS;DR, CC BY-SA
+
+## Marmara: site settings panel
+
+marmara-webgl-label = WebGL
+marmara-webgl-toggle =
+    .aria-label = Allow WebGL on this site
+marmara-webgl-description = Needed for 3D graphics, maps and some games. It can also be used for fingerprinting, so you're asked first by default.
+
+## Marmara: app menu
+
+marmara-appmenu-create-profile = Create profile
+marmara-appmenu-create-profile-button =
+    .title = Create profile
+    .aria-label = Create profile
+marmara-appmenu-eyedropper =
+    .label = Eyedropper
+marmara-appmenu-console =
+    .label = Web developer console
+marmara-appmenu-about =
+    .label = About
+
+## Marmara: settings
+
+marmara-settings-help = Help and troubleshooting
+    .title = Help and troubleshooting
+
+## Marmara: Ayarlar > Temel ayarlar sayfası
+
+marmara-pane-basics = Basic settings
+
+marmara-export-group =
+    .label = Export data
+    .description = Download your bookmarks and history as files.
+marmara-export-bookmarks =
+    .label = Export bookmarks (HTML)
+marmara-export-history =
+    .label = Export history (CSV)
+marmara-export-bookmarks-title = Export bookmarks
+marmara-export-history-title = Export history
+
+## Marmara: About dialog
+
+marmara-about-close =
+    .aria-label = Close
+    .title = Close
+marmara-about-back =
+    .aria-label = Back
+    .title = Back
+marmara-about-developer = Fuzuli Initiative
+marmara-about-website = Website
+marmara-about-report = Report an Issue
+marmara-about-credits = Credits
+marmara-about-legal = Legal
+marmara-about-credits-made-by = Created by
+marmara-about-credits-based-on = Based on
+marmara-about-legal-license = License
+marmara-about-legal-license-text = Marmara is free and open source software distributed under the Mozilla Public License 2.0; its source code is published on the project website. A copy of the license is available at https://mozilla.org/MPL/2.0/. This program comes with absolutely no warranty.
+marmara-about-legal-copyright = Copyright
+marmara-about-legal-copyright-text = Marmara-specific changes © 2026 Fuzuli Initiative. Copyrights of the Mozilla Firefox and LibreWolf components belong to their respective owners.
+marmara-about-legal-trademarks = Trademarks
+marmara-about-legal-trademarks-text = Firefox and Mozilla are trademarks of the Mozilla Foundation. Marmara is not developed, endorsed or approved by Mozilla or the LibreWolf project.
+marmara-about-legal-third-party = Third-party components
+
+## Marmara: Settings window
+marmara-settings-close =
+    .aria-label = Close
+    .title = Close
+marmara-settings-search =
+    .placeholder = Search settings
+    .aria-label = Search settings
+marmara-settings-page-general = General
+marmara-settings-page-startup = Startup & tabs
+marmara-settings-page-privacy = Privacy & security
+marmara-settings-page-passwords = Passwords & forms
+marmara-settings-page-downloads = Downloads
+marmara-settings-page-data = Data & add-ons
+marmara-settings-search-results = Search results
+marmara-settings-no-results = No results found
+marmara-settings-restart-needed = Restart to apply the language change
+marmara-settings-restart = Restart
+marmara-settings-group-default-browser = Default browser
+marmara-settings-group-appearance = Appearance
+marmara-settings-group-search = Search
+marmara-settings-group-language = Language
+marmara-settings-group-startup = Startup
+marmara-settings-group-tracking = Tracking
+marmara-settings-group-connection = Connection
+marmara-settings-group-data = Data
+marmara-settings-group-passwords = Passwords & autofill
+marmara-settings-group-downloads = Downloads
+marmara-settings-group-import-export = Import & export
+marmara-settings-group-extensions = Add-ons
+marmara-settings-make-default = Make Marmara the default browser
+marmara-settings-make-default-sub = Links and web documents open in Marmara
+marmara-settings-theme = Theme
+marmara-settings-theme-auto = System
+marmara-settings-theme-light = Light
+marmara-settings-theme-dark = Dark
+marmara-settings-engine = Default search engine
+marmara-settings-engine-sub = Used by the address bar and new tabs
+marmara-settings-suggestions = Search suggestions
+marmara-settings-add-engine = Add search engine
+marmara-settings-ui-language = Interface language
+marmara-settings-restore-session = Restore previous session
+marmara-settings-warn-close = Warn when closing multiple tabs
+marmara-settings-recent-tabs = Cycle tabs by most recently used
+marmara-settings-recent-tabs-sub = Ctrl+Tab switches to the tab you used last
+marmara-settings-gpc = Send do-not-track request
+marmara-settings-gpc-sub = Sends the Global Privacy Control signal so sites don't sell your data
+marmara-settings-fingerprint = Resist fingerprinting
+marmara-settings-fingerprint-sub = Hides details that make your browser unique; some sites may break
+marmara-settings-letterboxing = Hide window size
+marmara-settings-letterboxing-sub = Adds margins around content to conceal your screen size
+marmara-settings-referrer = Limit cross-site referrer information
+marmara-settings-referrer-sub = The previous address isn't passed when moving between sites
+marmara-settings-https-only = HTTPS only
+marmara-settings-https-only-sub = Warns before opening unencrypted connections
+marmara-settings-doh = Encrypted DNS (DNS over HTTPS)
+marmara-settings-doh-sub = Hides domain lookups from your network
+marmara-settings-ipv6 = Use IPv6
+marmara-settings-remember-history = Remember history
+marmara-settings-update-addons = Update add-ons automatically
+marmara-settings-update-addons-sub = Security fixes install on their own
+marmara-settings-clear-data = Clear data…
+marmara-settings-save-logins = Offer to save passwords
+marmara-settings-autofill-addresses = Autofill addresses
+marmara-settings-autofill-cards = Autofill cards
+marmara-settings-saved-logins = Saved passwords
+marmara-settings-ask-download = Ask where to save each file
+marmara-settings-download-folder = Choose download folder…
+marmara-settings-import = Import from another browser…
+marmara-settings-export-bookmarks = Export bookmarks (HTML)
+marmara-settings-export-history = Export history (CSV)
+marmara-settings-addons = Manage add-ons
+
+marmara-settings-group-updates = Updates
+marmara-settings-update = Marmara { $version }
+marmara-settings-update-idle = Check whether a new version is available
+marmara-settings-update-checking = Checking…
+marmara-settings-update-current = Marmara is up to date
+marmara-settings-update-available = New version available: { $version }
+marmara-settings-update-error = Couldn't check; check your connection
+marmara-settings-update-check = Check
+marmara-settings-update-download = Download

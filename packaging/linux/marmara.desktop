@@ -1,0 +1,28 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Marmara
+GenericName=Web Browser
+GenericName[tr]=Web Tarayıcısı
+Comment=Browse the web privately
+Comment[tr]=Web'de gizliliğinizi koruyarak gezinin
+Exec=marmara %u
+Icon=marmara
+Terminal=false
+StartupNotify=true
+StartupWMClass=marmara
+Categories=Network;WebBrowser;GNOME;GTK;
+Keywords=web;browser;internet;privacy;
+Keywords[tr]=web;tarayıcı;internet;gizlilik;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;application/x-xpinstall;application/pdf;
+Actions=new-window;new-private-window;
+
+[Desktop Action new-window]
+Name=New Window
+Name[tr]=Yeni Pencere
+Exec=marmara --new-window %u
+
+[Desktop Action new-private-window]
+Name=New Private Window
+Name[tr]=Yeni Gizli Pencere
+Exec=marmara --private-window %u

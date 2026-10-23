@@ -1,0 +1,103 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Marmara: arama motoru seçici (marmara-engine-picker.mjs) */
+
+:host(marmara-engine-picker) {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: min(520px, 80vw);
+}
+
+/* Seçenek, kendi sabit boyutlu kutusu kadar yer kaplar (aynı dosya iki
+ * bileşende de yüklendiği için :host kuralları ayrı yazılmalı) */
+:host(marmara-engine-option) {
+  display: block;
+  flex: none;
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+}
+
+/* Her motor kendi yuvarlak köşeli kutusunda, kutular yan yana */
+.tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Tek bir motor: logo ve altında adı */
+.option {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 104px;
+  height: 76px;
+  padding: 8px;
+  border-radius: 12px;
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+  color: inherit;
+  font: inherit;
+  cursor: default;
+}
+
+.option:hover {
+  background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.option:hover:active {
+  background-color: color-mix(in srgb, currentColor 20%, transparent);
+}
+
+/* Seçili motor: vurgu renginde halka ve hafif dolgu */
+.option[aria-checked="true"] {
+  background-color: color-mix(in srgb, var(--mm-accent-bg, AccentColor) 18%, transparent);
+  box-shadow: inset 0 0 0 2px var(--mm-accent-bg, AccentColor);
+}
+
+.option:focus-visible {
+  outline: 2px solid var(--focus-outline-color, AccentColor);
+  outline-offset: 2px;
+}
+
+/* "+" kutusu: seçilemez, yeni motor eklemek için */
+.option.add {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.option.add:hover {
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.85em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

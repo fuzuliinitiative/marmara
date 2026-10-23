@@ -1,0 +1,70 @@
+@import url("chrome://browser/skin/marmara/preferences-adwaita.css");
+
+/* Marmara — Ayarlar sayfası (about:preferences)
+ *
+ * chrome://browser/skin/marmara/preferences.css olarak paketlenir ve
+ * preferences.xhtml'e en son stil dosyası olarak eklenir.
+ *
+ * Mozilla hizmetlerine bağlı bölümleri gizler. Bu özelliklerin hepsi
+ * LibreWolf/Marmara ayarlarıyla zaten kapalı; burada yalnızca arayüzden
+ * kaldırılıyorlar. Ayarlar sayfası Firefox'ta yeniden yazılmakta olduğu için
+ * hem yeni (setting-group[groupid]) hem eski (data-srd-groupid) işaretlemeyi
+ * hedefliyoruz.
+ */
+
+/* Bölümler */
+:is(setting-group[groupid], [data-srd-groupid]):is(
+  [groupid="dataCollection"],      [data-srd-groupid="dataCollection"],     /* Mozilla'ya veri gönderme */
+  [groupid="firefoxSuggest"],      [data-srd-groupid="firefoxSuggest"],     /* Mozilla'dan öneriler */
+  [groupid="ipprotection"],        [data-srd-groupid="ipprotection"],       /* Mozilla VPN */
+  [groupid="vpnSiteRules"],        [data-srd-groupid="vpnSiteRules"],
+  [groupid="referrals"],           [data-srd-groupid="referrals"],          /* Mozilla'yı tavsiye et */
+  [groupid="updates"],             [data-srd-groupid="updates"],
+  [groupid="profiles"],            [data-srd-groupid="profiles"],           /* çoklu profil */
+  [groupid="profilePane"],         [data-srd-groupid="profilePane"],            /* Mozilla güncelleme sunucusu */
+  [groupid="support"],             [data-srd-groupid="support"]             /* support.mozilla.org */
+) {
+  display: none !important;
+}
+
+/* Tek tek ayarlar */
+#setting-control-relayIntegration,   /* Firefox Relay e-posta maskeleri */
+#relayIntegrationBox,
+#breachAlertsBox,                    /* Firefox Monitor veri ihlali uyarıları */
+#setting-control-breachAlerts {
+  display: none !important;
+}
+
+/* Sol menüdeki Mozilla'ya ait sayfalar ve yardım bağlantısı.
+ * "Hesap ve eşitleme" (#category-sync) kalıyor: yer imleri ve sekmeler başka
+ * tarayıcılarla eşitlenebilsin. */
+#category-experimental,              /* Firefox Labs */
+#category-more-from-mozilla,
+#category-about-firefox,             /* yalnızca Mozilla güncelleme ve destek içeriyordu */
+moz-page-nav-button[view="paneAbout"],
+#helpButton {
+  display: none !important;
+}
+
+/* Görünüm sayfası: yalnızca tema seçimi (Sistem / Aydınlık / Karanlık).
+ * Seçim settings/appearance-marmara.mjs ile "appearance" grubuna taşındı. */
+setting-group:is(
+  [groupid="browserTheme"],        /* tema yönetimi, Nova ve userChrome seçenekleri */
+  [groupid="windowDensity"],       /* sıkışık / dokunmatik yerleşim */
+  [groupid="browserIconEntry"],    /* tarayıcı simgesi (yalnızca Windows) */
+  [groupid="relatedSettings"]      /* ilgili ayarlara bağlantılar */
+) {
+  display: none !important;
+}
+
+/* Arama motoru seçicisi kartın tüm genişliğini kullansın */
+setting-control:has(> marmara-engine-picker) {
+  display: block;
+  width: 100%;
+}
+
+marmara-engine-picker {
+  display: block;
+  width: 100%;
+  min-width: min(520px, 80vw);
+}

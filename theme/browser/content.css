@@ -1,0 +1,10 @@
+/* Web içeriği: GNOME Web'de içerik kenardan kenaradır, yuvarlak köşe ya da
+ * gölge yoktur. Başlık bölgesiyle arasında tek bir ince çizgi bulunur. */
+
+#tabbrowser-tabpanels > :not(.split-view-panel) .browserContainer {
+  --content-area-start-radius: 0;
+}
+
+#tabbrowser-tabpanels .browserContainer {
+  box-shadow: none;
+}

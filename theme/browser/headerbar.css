@@ -1,0 +1,65 @@
+/* GNOME Web düzeni: adres çubuğu başlık çubuğu olur, sekmeler onun altında.
+ *
+ * Firefox, pencere düğmelerini (küçült/büyüt/kapat) "ilk görünen araç
+ * çubuğunda" gösteriyor. Sırayı değiştirdiğimiz için düğmeleri sekme
+ * çubuğundan alıp adres çubuğuna veriyoruz.
+ *
+ * Dikey sekmeler açıkken Firefox zaten bu düzeni kullandığı için bu modül
+ * o durumda hiçbir şeyi değiştirmez.
+ *
+ * Bu modülü kapatmak için marmara.css içindeki @import satırını silmek yeterli.
+ */
+
+#navigator-toolbox {
+  display: flex;
+  flex-direction: column;
+}
+
+#toolbar-menubar { order: 0; }
+#nav-bar         { order: 1; }
+#TabsToolbar     { order: 2; }
+#PersonalToolbar { order: 3; }
+#notifications-toolbar { order: 4; }
+
+/* Adres çubuğu artık pencereyi sürüklemek için de kullanılıyor.
+ * Düğmeler ve adres alanı Firefox tarafından zaten "no-drag" işaretli. */
+:root[customtitlebar] #nav-bar {
+  -moz-window-dragging: drag;
+}
+
+/* Pencere düğmeleri: adres çubuğunda göster, sekme çubuğunda gizle.
+ * Menü çubuğu kalıcı olarak açıksa Firefox'un kendi kuralı geçerli kalır. */
+:root:is([customtitlebar], [inFullscreen])
+  #toolbar-menubar:is([autohide], [collapsed])
+  ~ #nav-bar
+  > .titlebar-buttonbox-container {
+  display: flex;
+}
+
+:root:is([customtitlebar], [inFullscreen]) #TabsToolbar > .titlebar-buttonbox-container,
+:root:is([customtitlebar], [inFullscreen]) #TabsToolbar > hbox.titlebar-spacer,
+:root:is([customtitlebar], [inFullscreen]) #nav-bar > hbox.titlebar-spacer {
+  display: none;
+}
+
+/* Başlık çubuğu iç boşluğu: libadwaita 6px */
+#nav-bar {
+  padding-block: 3px;
+  padding-inline: 3px;
+}
+
+/* Arka plandaki pencere: libadwaita başlık çubuğu içeriğini %50 soldurur */
+#nav-bar-customization-target {
+  transition: opacity 200ms ease-out;
+}
+
+/* Sekme çubuğu gizliyken Firefox nav-bar'a .browser-titlebar veriyor ve
+ * soldurmayı kendisi yapıyor; iki kez soldurmamak için o durumu atlıyoruz. */
+#nav-bar:not(.browser-titlebar) > #nav-bar-customization-target:-moz-window-inactive {
+  opacity: var(--inactive-titlebar-opacity);
+}
+
+/* Başlık çubuğundaki "yeni sekme" düğmesi: GNOME Web'deki gibi düz bir "+" */
+#nav-bar #new-tab-button {
+  list-style-image: url("chrome://global/skin/icons/plus.svg");
+}

@@ -1,0 +1,27 @@
+/* Şekil katmanı: boyutlar ve köşeler, yine yalnızca token'larla.
+ * libadwaita ölçüleri: başlık çubuğu düğmeleri 34px, köşe 6px,
+ * popover 12px, sekme çubuğu sekmeleri 6px. */
+
+:root:not([uidensity="compact"], [uidensity="touch"]) {
+  --toolbarbutton-padding-inner: 9px;        /* 16px simge + 2×9 = 34px */
+  --toolbarbutton-padding-outer: 3px;        /* düğmeler arası 6px */
+  --urlbar-height: 34px;
+  --tab-min-height: 34px;
+  --tab-margin-block: 3px;
+}
+
+:root {
+  --toolbarbutton-border-radius: 6px;
+  --urlbar-border-radius: 6px;
+  --urlbarview-border-radius: 12px;
+  --tab-border-radius: 6px;
+  --tab-padding-inline: 10px;
+  --menuitem-border-radius: 6px;
+  --panel-menuitem-border-radius: 6px;
+  --inactive-titlebar-opacity: 0.5;          /* libadwaita: arka plandaki pencere */
+}
+
+/* Kapatma düğmesi yuvarlak (libadwaita "circular") */
+.tab-close-button {
+  border-radius: 50%;
+}

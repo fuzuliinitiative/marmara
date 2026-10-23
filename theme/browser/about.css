@@ -1,0 +1,216 @@
+/* "Hakkında" iletişim kutusu: libadwaita AdwAboutDialog görünümü.
+ * Yapıyı modules/MarmaraAbout.sys.mjs kuruyor. */
+
+dialog.marmara-about {
+  --mm-about-card: var(--mm-card-bg, color-mix(in srgb, currentColor 6%, transparent));
+  --mm-about-row-hover: color-mix(in srgb, currentColor 7%, transparent);
+  --mm-about-row-active: color-mix(in srgb, currentColor 14%, transparent);
+  --mm-about-round: color-mix(in srgb, currentColor 10%, transparent);
+  --mm-about-round-hover: color-mix(in srgb, currentColor 16%, transparent);
+
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  box-sizing: border-box;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  height: fit-content;
+  max-height: min(680px, calc(100vh - 48px));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--mm-border, color-mix(in srgb, currentColor 15%, transparent));
+  border-radius: 16px;
+  background-color: var(--mm-dialog-bg, Canvas);
+  color: var(--mm-window-fg, CanvasText);
+  box-shadow: 0 8px 32px rgb(0 0 6 / 0.35);
+  font: menu;
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+    animation: marmara-about-in 160ms ease-out;
+  }
+
+  &::backdrop {
+    background-color: rgb(0 0 6 / 0.45);
+  }
+}
+
+@keyframes marmara-about-in {
+  from { opacity: 0; transform: scale(0.96); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.marmara-about[open] { animation: none; }
+}
+
+.marmara-about-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  -moz-context-properties: fill;
+  fill: currentColor;
+}
+
+/* Yuvarlak düğmeler: kapat, geri */
+.marmara-about-round {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--mm-about-round);
+  color: inherit;
+
+  &:hover { background-color: var(--mm-about-round-hover); }
+  &:active { background-color: var(--mm-about-row-active); }
+}
+
+.marmara-about-close {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
+  z-index: 1;
+}
+
+.marmara-about-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Ana sayfa */
+.marmara-about-main {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 36px 14px 14px;
+  text-align: center;
+}
+
+.marmara-about-logo {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 16px;
+}
+
+.marmara-about-name {
+  margin: 0;
+  font-size: 1.6em;
+  font-weight: 800;
+}
+
+.marmara-about-developer {
+  margin-block: 4px 12px;
+  opacity: 0.8;
+}
+
+.marmara-about-version {
+  align-self: center;
+  margin-block-end: 18px;
+  padding: 3px 14px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--mm-accent, AccentColor) 18%, transparent);
+  color: var(--mm-accent, AccentColor);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Satır grupları: yuvarlak köşeli kartlar */
+.marmara-about-group {
+  display: flex;
+  flex-direction: column;
+  margin-block-end: 14px;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--mm-about-card);
+  text-align: start;
+}
+
+.marmara-about-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+
+  & + & {
+    border-top: 1px solid var(--mm-border, color-mix(in srgb, currentColor 12%, transparent));
+  }
+}
+
+button.marmara-about-row {
+  &:hover { background-color: var(--mm-about-row-hover); }
+  &:active { background-color: var(--mm-about-row-active); }
+  &:focus-visible {
+    outline: 2px solid var(--focus-outline-color, AccentColor);
+    outline-offset: -2px;
+  }
+
+  > .marmara-about-icon { opacity: 0.7; }
+}
+
+.marmara-about-static {
+  min-height: 40px;
+}
+
+.marmara-about-license {
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+/* Alt sayfalar */
+.marmara-about-subheader {
+  position: sticky;
+  inset-block-start: 0;
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background-color: var(--mm-dialog-bg, Canvas);
+
+  > h1 {
+    grid-column: 2;
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 700;
+    text-align: center;
+  }
+}
+
+.marmara-about-sections {
+  padding: 4px 14px 16px;
+}
+
+.marmara-about-section {
+  margin-block-end: 18px;
+
+  > h2 {
+    margin: 0 0 6px;
+    padding-inline: 4px;
+    font-size: 1em;
+    font-weight: 700;
+  }
+
+  > p {
+    margin: 0;
+    padding-inline: 4px;
+    line-height: 1.45;
+    opacity: 0.85;
+    user-select: text;
+  }
+
+  > .marmara-about-name-line {
+    opacity: 1;
+  }
+}

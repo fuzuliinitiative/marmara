@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="20 21.5 88 88">
+  <title>Deniz Anası</title>
+  <g fill="none" stroke-width="8" stroke-linecap="round">
+    <g stroke="#1a5fb4" transform="translate(0 3)">
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(45 64 64)"/>
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(135 64 64)"/>
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(225 64 64)"/>
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(315 64 64)"/>
+    </g>
+    <g stroke="#3584e4">
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(45 64 64)"/>
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(135 64 64)"/>
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(225 64 64)"/>
+      <path d="M 77.6 58 A 12 12 0 1 1 77.6 70" transform="rotate(315 64 64)"/>
+    </g>
+  </g>
+</svg>

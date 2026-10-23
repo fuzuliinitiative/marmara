@@ -1,0 +1,37 @@
+/* Marmara — about:addons > Temalar */
+
+/* Firefox'un yerleşik temaları: sistem, aydınlık ve karanlık, sayfanın üstündeki
+ * Cihaz / Aydınlık / Karanlık seçimiyle aynı işi yapıyor; Alpenglow ise
+ * Marmara'nın Adwaita görünümünü kapatıyor. Kartlar yinelenmesin diye gizli. */
+addon-list[type="theme"] addon-card:is(
+  [addon-id="default-theme@mozilla.org"],
+  [addon-id="firefox-compact-light@mozilla.org"],
+  [addon-id="firefox-compact-dark@mozilla.org"],
+  [addon-id="firefox-alpenglow@mozilla.org"]
+) {
+  display: none !important;
+}
+
+/* Yalnızca yerleşik temaların durduğu bölüm (başlığıyla birlikte) boş kalmasın */
+addon-list[type="theme"] section:not(
+  :has(> addon-card:not(
+    [addon-id="default-theme@mozilla.org"],
+    [addon-id="firefox-compact-light@mozilla.org"],
+    [addon-id="firefox-compact-dark@mozilla.org"],
+    [addon-id="firefox-alpenglow@mozilla.org"]
+  ))
+) {
+  display: none !important;
+}
+
+/* "Linux sistem temasını kullan": Marmara kendi Adwaita renklerini kullanıyor */
+native-theme-colors-checkbox {
+  display: none !important;
+}
+
+.marmara-themes-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-large);
+  margin-block-end: var(--space-xlarge);
+}

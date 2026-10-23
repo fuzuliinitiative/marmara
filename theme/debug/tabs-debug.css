@@ -1,0 +1,19 @@
+/* Teşhis katmanı: yalnızca ./build.sh --debug-tabs ile eklenir.
+ * Sekme çubuğundaki her kutuyu ayrı renge boyar; ekran görüntüsünde boş
+ * alanın hangi renkte olduğu, o alanı hangi öğenin kapladığını gösterir. */
+#TabsToolbar { background: #e01b24 !important; }                                   /* kırmızı */
+#TabsToolbar > :not(.toolbar-items) { background: #ff00ff !important; min-width: 4px; }  /* pembe */
+#TabsToolbar .toolbar-items { background: #ff7800 !important; }                     /* turuncu */
+#TabsToolbar-customization-target { background: #f6d32d !important; }               /* sarı */
+#TabsToolbar-customization-target > :not(#tabbrowser-tabs) { background: #000 !important; } /* siyah */
+#tabbrowser-tabs { background: #33d17a !important; }                                /* yeşil */
+#tabbrowser-tabs > :not(#tabbrowser-arrowscrollbox) { background: #ffffff !important; }      /* beyaz */
+#tabbrowser-arrowscrollbox { background: #3584e4 !important; }                      /* mavi */
+#tabbrowser-arrowscrollbox::part(scrollbox) { background: #00ffff !important; }    /* camgöbeği */
+#tabbrowser-arrowscrollbox::part(scrollbutton-up),
+#tabbrowser-arrowscrollbox::part(scrollbutton-down),
+#tabbrowser-arrowscrollbox::part(overflow-start-indicator),
+#tabbrowser-arrowscrollbox::part(overflow-end-indicator) { background: #9141ac !important; } /* mor */
+.tabbrowser-tab { background: #865e3c !important; }                                 /* kahverengi */
+.tab-label-container { outline: 1px dashed #fff !important; }
+.tab-content { outline: 1px solid #000 !important; }

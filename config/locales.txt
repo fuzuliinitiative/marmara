@@ -1,0 +1,4 @@
+# Marmara'da kalacak arayüz dilleri (boşluk ya da satırla ayırın).
+# en-US her zaman kalır (Firefox'un yedek dili). Diğer diller paketten
+# çıkarılır; LibreWolf ~105 dille geliyor ve bu ~250 MB yer kaplıyor.
+tr

@@ -1,0 +1,26 @@
+/* Site ayarları paneli (Firefox'un kalkan paneli) ve adres çubuğundaki izin simgeleri */
+
+/* WebGL simgeleri adres çubuğunda değil, site ayarları panelinde
+ * (modules/MarmaraWebGL.sys.mjs). */
+#webgl-notification-icon,
+.blocked-permission-icon.webgl-icon {
+  display: none !important;
+}
+
+/* Panelde, izleyici koruması anahtarının hemen altında */
+#marmara-webgl-section {
+  order: -1;
+  padding: var(--space-small) var(--panel-menuitem-padding-inline);
+  gap: var(--space-xsmall);
+}
+
+#marmara-webgl-row {
+  justify-content: space-between;
+  gap: var(--space-medium);
+}
+
+#marmara-webgl-description {
+  margin: 0;
+  opacity: 0.7;
+  font-size: 0.9em;
+}

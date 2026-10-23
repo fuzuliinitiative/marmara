@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="336" height="48" viewBox="0 0 336 48">
+  <style>
+    text { fill: #222226; font: 700 40px "Adwaita Sans", Cantarell, Inter, sans-serif; letter-spacing: -0.5px; }
+    @media (prefers-color-scheme: dark) { text { fill: #ffffff; } }
+  </style>
+  <text x="0" y="38">Marmara</text>
+</svg>

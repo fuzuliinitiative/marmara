@@ -1,0 +1,65 @@
+/* Renk katmanı: tarayıcıya özgü token'lar.
+ * Genel palet (--mm-*) theme/global/tokens.css içinde tanımlı. */
+
+@media not ((forced-colors) or (prefers-contrast)) {
+  :root:not([lwtheme]) {
+    /* Başlık çubuğu ve araç çubukları: AdwHeaderBar */
+    --toolbox-background-color: var(--mm-headerbar-bg);
+    --toolbox-background-color-inactive: var(--mm-headerbar-backdrop);
+    --toolbox-text-color: var(--mm-window-fg);
+    --toolbox-text-color-inactive: var(--mm-window-fg);
+    --toolbox-background-gradient: none;
+    --toolbox-background-image: none;
+
+    --toolbar-background-color: var(--mm-headerbar-bg);
+    --toolbar-text-color: var(--mm-window-fg);
+    --tabs-navbar-separator-style: none;
+    --chrome-content-separator-color: var(--mm-headerbar-shade);
+    --content-area-shadow: none;
+
+    /* Araç çubuğu düğmeleri: libadwaita düz düğme */
+    --toolbarbutton-icon-fill: currentColor;
+    --toolbarbutton-icon-fill-attention: var(--mm-accent);
+    --toolbarbutton-background-color-hover: var(--mm-hover);
+    --toolbarbutton-background-color-active: var(--mm-active);
+    --toolbarbutton-outline-color: transparent;
+    --toolbarbutton-outline-color-hover: transparent;
+    --toolbarbutton-outline-color-active: transparent;
+
+    /* Adres çubuğu: AdwEntry
+     * Odaklanınca öneri listesi web içeriğinin üstüne açıldığı için arka planın
+     * opak olması gerekiyor, bu yüzden popover rengine geçiyoruz. */
+    --toolbar-field-background-color: var(--mm-button);
+    --toolbar-field-background-color-focus: var(--mm-popover-bg);
+    --toolbar-field-border-color: transparent;
+    --toolbar-field-border-color-focus: var(--focus-outline-color);
+    --toolbar-field-text-color: var(--mm-window-fg);
+    --toolbar-field-text-color-focus: var(--mm-window-fg);
+    --urlbar-box-background-color: var(--mm-button);
+    --urlbar-box-background-color-hover: var(--mm-button-hover);
+    --urlbar-box-background-color-active: var(--mm-button-active);
+    --urlbar-box-background-color-focus: var(--mm-button);
+    --urlbarview-background-color-hover: var(--mm-hover);
+    --urlbarview-background-color-selected: var(--mm-selected);
+    --urlbarview-text-color-selected: var(--mm-window-fg);
+    --urlbarview-separator-color: var(--mm-border);
+
+    /* Sekmeler: AdwTabBar */
+    --tab-background-color: transparent;
+    --tab-background-color-hover: var(--mm-hover);
+    --tab-background-color-selected: var(--mm-selected);
+    --tab-text-color: var(--mm-window-fg);
+    --tab-text-color-hover: var(--mm-window-fg);
+    --tab-text-color-selected: var(--mm-window-fg);
+    --tab-border-color: transparent;
+    --tab-border-color-hover: transparent;
+    --tab-border-color-selected: transparent;
+    --tab-box-shadow-selected: none;
+    --tab-icon-fill-loading: var(--mm-accent);
+    --tab-attention-dot-color: var(--mm-accent);
+
+    /* Bilgi çubukları ve kenar çubuğu */
+    --info-bar-border-color: var(--mm-headerbar-shade);
+    --tabpanel-background-color: var(--mm-view-bg);
+  }
+}

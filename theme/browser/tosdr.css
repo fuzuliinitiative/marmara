@@ -1,0 +1,181 @@
+/* Hizmet Koşulları Notu (ToS;DR): adres çubuğundaki not ve ayrıntı paneli.
+ * Öğeleri modules/MarmaraTosdr.sys.mjs oluşturur. */
+
+:root {
+  /* ToS;DR not renkleri, GNOME paletinden */
+  --mm-grade-a: #26a269;
+  --mm-grade-b: #8ac926;
+  --mm-grade-c: #e5a50a;
+  --mm-grade-d: #e66100;
+  --mm-grade-e: #c01c28;
+  --mm-grade-none: #9a9996;
+  --mm-point-good: #26a269;
+  --mm-point-neutral: #9a9996;
+  --mm-point-bad: #e66100;
+  --mm-point-blocker: #c01c28;
+}
+
+/* ---- Adres çubuğundaki not ---- */
+
+#marmara-tosdr-box {
+  height: var(--urlbar-basic-component-size);
+  padding-inline: var(--urlbar-icon-padding);
+  border-radius: var(--urlbar-inner-border-radius);
+  justify-content: center;
+
+  &:hover:not([open]) {
+    background-color: var(--urlbar-box-background-color-hover);
+  }
+
+  &[open] {
+    background-color: var(--urlbar-box-background-color-active);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-inset);
+  }
+}
+
+/* Kullanıcı adres yazarken not gizlenir (Firefox kalkanla da böyle yapıyor) */
+.urlbar-input-container[pageproxystate="invalid"] > #marmara-tosdr-box {
+  display: none;
+}
+
+.marmara-tosdr-grade {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  background: var(--mm-grade-none);
+}
+
+:is(#marmara-tosdr-box[grade="A"] .marmara-tosdr-grade, .marmara-tosdr-grade[grade="A"]) { background: var(--mm-grade-a); }
+:is(#marmara-tosdr-box[grade="B"] .marmara-tosdr-grade, .marmara-tosdr-grade[grade="B"]) { background: var(--mm-grade-b); color: rgb(0 0 6 / 0.8); }
+:is(#marmara-tosdr-box[grade="C"] .marmara-tosdr-grade, .marmara-tosdr-grade[grade="C"]) { background: var(--mm-grade-c); color: rgb(0 0 6 / 0.8); }
+:is(#marmara-tosdr-box[grade="D"] .marmara-tosdr-grade, .marmara-tosdr-grade[grade="D"]) { background: var(--mm-grade-d); }
+:is(#marmara-tosdr-box[grade="E"] .marmara-tosdr-grade, .marmara-tosdr-grade[grade="E"]) { background: var(--mm-grade-e); }
+
+/* Not görünürken ve bağlantı güvenliyken Firefox'un kalkanı yer kaplamaz.
+ * Güvensiz bağlantı, sertifika uyarısı ya da veri ihlali varsa kalkan görünür
+ * kalır. Kalkanı tamamen gizlemek yerine genişliğini sıfırlıyoruz: Firefox
+ * kendi panelini ona bağlı açıyor, panelde "Bağlantı güvenliği ve site
+ * ayarları" düğmesi bu sayede çalışmaya devam ediyor. */
+#urlbar[marmara-graded]
+  .urlbar-input-container:not([pageproxystate="invalid"])
+  > #trust-icon-container:is(.secure, .scanning):not(.insecure, .warning, .breached) {
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  outline: none !important;
+}
+
+/* ---- Ayrıntı paneli ---- */
+
+#marmara-tosdr-panel {
+  --panel-padding: 0;
+}
+
+.marmara-tosdr-body {
+  width: 360px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font: message-box;
+  line-height: 1.4;
+}
+
+.marmara-tosdr-card {
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.marmara-tosdr-summary {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.marmara-tosdr-grade-large {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 28px;
+}
+
+.marmara-tosdr-title { font-weight: 700; }
+.marmara-tosdr-grade-label { font-weight: 600; }
+.marmara-tosdr-dim { opacity: 0.7; }
+.marmara-tosdr-small { font-size: 0.9em; }
+
+.marmara-tosdr-heading {
+  font-weight: 700;
+  font-size: 0.9em;
+  opacity: 0.7;
+  margin: 4px 4px 0;
+}
+
+.marmara-tosdr-status { padding: 4px; }
+
+.marmara-tosdr-points {
+  list-style: none;
+  margin: 0;
+  padding-block: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+
+  > li {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    padding-block: 7px;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+
+    &:last-child { border-bottom: none; }
+  }
+}
+
+.marmara-tosdr-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--mm-point-neutral);
+  translate: 0 -1px;
+
+  li[data-class="good"] > & { background: var(--mm-point-good); }
+  li[data-class="bad"] > & { background: var(--mm-point-bad); }
+  li[data-class="blocker"] > & { background: var(--mm-point-blocker); }
+}
+
+.marmara-tosdr-button {
+  appearance: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+
+  &:hover { background: color-mix(in srgb, currentColor 13%, transparent); }
+  &:hover:active { background: color-mix(in srgb, currentColor 22%, transparent); }
+  &:focus-visible { outline: var(--focus-outline); }
+}
+
+.marmara-tosdr-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 4px 0;
+}

@@ -1,0 +1,95 @@
+/* AdwTabBar görünümü (GNOME Web / Safari):
+ * - Tek sekme varken sekme çubuğu gizlenir (bkz. patch_omni.py: tab-bar-visibility.js).
+ * - Birden fazla sekmede sekmeler çubuğun tamamını eşit olarak paylaşır.
+ * - Her sekme yuvarlak köşeli bir kutu; açık sekme daha belirgin renkte.
+ * - Simge ve başlık sekmenin ortasında.
+ * - Kapatma düğmesi yalnızca açık sekmede ve fareyle üzerine gelince görünür.
+ */
+
+/* Firefox --tab-max-width'i #tabbrowser-tabs üzerinde 225px olarak tanımlıyor;
+ * aynı öğede ezmemiz gerekiyor ki sekmeler genişleyip boşluk bırakmasın. */
+#tabbrowser-tabs[orient="horizontal"] {
+  --tab-max-width: none;
+}
+
+#TabsToolbar {
+  padding-inline: 3px;
+}
+
+/* ---- Sekme kutuları ----
+ * Renkler currentColor'dan türediği için açık ve koyu modda kendiliğinden doğru
+ * tonu alır: koyu modda açık sekme daha aydınlık, açık modda daha koyu. */
+@media not ((forced-colors) or (prefers-contrast)) {
+  :root:not([lwtheme]) {
+    --tab-background-color: color-mix(in srgb, currentColor 6%, transparent);
+    --tab-background-color-hover: color-mix(in srgb, currentColor 10%, transparent);
+    --tab-background-color-selected: color-mix(in srgb, currentColor 20%, transparent);
+  }
+}
+
+/* ---- İçerik ortada ----
+ * Sekme içeriği: [simge][başlık ......][×]. Başlık kutusunun genişliğini
+ * metniyle sınırlayıp içeriği ortalıyoruz; kapatma düğmesini akıştan çıkarıp sağ kenara
+ * sabitliyoruz. İki yandaki eşit iç boşluk sayesinde simge ve başlık tam
+ * ortada durur, uzun başlıklar da düğmenin altına taşmaz.
+ * Firefox'un kendi kurallarıyla çakışmaması için !important kullanılıyor. */
+#tabbrowser-tabs[orient="horizontal"] .tabbrowser-tab:not([pinned]) {
+  .tab-content {
+    justify-content: center !important;
+    padding-inline: calc(var(--tab-padding-inline) + var(--tab-content-button-size)) !important;
+  }
+
+  /* Firefox başlık kutusuna tarayıcının kendi stil dosyasında
+   * "flex: 1 !important" veriyor (xul.css, [flex="1"]); bu kural hiçbir
+   * sayfa stiliyle ezilemez. Büyümeyi engellemek yerine kutunun en fazla
+   * metni kadar genişlemesine izin veriyoruz; kalan boşluk iki yana eşit dağılır. */
+  .tab-label-container {
+    max-width: max-content;
+  }
+
+  .tab-close-button {
+    position: absolute;
+    inset-inline-end: calc(var(--tab-padding-inline) / 2);
+    margin: 0 !important;
+  }
+
+  /* GNOME Web: kapat düğmesi açık sekmede ya da üzerine gelince */
+  &:not([selected], :hover) .tab-close-button {
+    visibility: hidden;
+  }
+}
+
+/* ---- Sağdaki boşluk ----
+ * Yatay sekmelerde kullanılmayan ama yer kaplayabilen öğeler: dikey sekme
+ * düğmesi ve sekme listesinin sonundaki "çevre" kutusu (gizli + düğmesi ve
+ * kapanan sekmeler için ayrılan boşluk). */
+#tabbrowser-tabs[orient="horizontal"] {
+  #vertical-tabs-newtab-button,
+  #tabbrowser-arrowscrollbox > #tabbrowser-arrowscrollbox-periphery {
+    display: none !important;
+  }
+
+  /* Firefox sekme kapatınca diğer sekmelerin genişliğini fare çubuktan
+   * çıkana kadar kilitliyor ve sağda boşluk kalıyor. GNOME Web gibi
+   * sekmeler hemen yeniden yayılsın. */
+  .tabbrowser-tab[fadein]:not([pinned]) {
+    max-width: none !important;
+  }
+}
+
+/* ---- Yapay zekâ düğmeleri ----
+ * Firefox 158'in "Smart Window" ve "sekmeleri düzenle" düğmeleri varsayılan
+ * olarak sekme çubuğuna ekleniyor. Özellikler politikalarla kapalı olduğu için
+ * içleri boş kalıyor ama yer kaplıyorlar (sekmelerin sağındaki boşluk). */
+#TabsToolbar :is(#ai-window-toggle, #smartwindow-group-tabs-button) {
+  display: none !important;
+}
+
+/* ---- Esnek boşluklar ----
+ * Firefox 158, "tüm sekmeler" düğmesi olmayan profillerin sekme çubuğuna
+ * kendiliğinden bir esnek boşluk (toolbarspring) ekliyor (CustomizableUI,
+ * sürüm 28 geçişi). Marmara'da sekmeler çubuğun tamamını kullandığı için
+ * sekme çubuğundaki esnek boşlukları gizliyoruz. */
+#TabsToolbar-customization-target > toolbarspring {
+  display: none !important;
+}

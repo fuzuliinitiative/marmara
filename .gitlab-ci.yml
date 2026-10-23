@@ -1,0 +1,32 @@
+# Marmara GitLab CI
+#
+#  kontrol          Her push ve merge request'te betik sözdizimini denetler.
+#  librewolf-update Zamanlanmış çalışır (Build → Pipeline schedules, örn. "17 */6 * * *").
+#                   LibreWolf'un yeni sürümünü bulursa Marmara'yı derler ve release açar.
+#                   Kurulum: README'deki "GitLab" bölümü.
+
+stages: [check, update]
+
+default:
+  image: debian:stable-slim
+
+kontrol:
+  stage: check
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 nodejs shellcheck
+  script:
+    - python3 -m py_compile scripts/*.py
+    - for f in modules/*.mjs; do node --check "$f"; done
+    - shellcheck build.sh scripts/*.sh
+
+librewolf-update:
+  stage: update
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 unzip zip xz-utils curl jq git ca-certificates
+  script:
+    - scripts/ci-update.sh

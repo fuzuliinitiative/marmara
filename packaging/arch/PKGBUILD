@@ -1,0 +1,54 @@
+# Marmara — Arch Linux paketi
+#
+# Kullanım (bu klasörde):
+#   makepkg -si
+#
+# Kurulu LibreWolf'tan (/usr/lib/librewolf) Marmara'yı üretir ve sisteme
+# kurar: /usr/lib/marmara, /usr/bin/marmara, uygulama menüsü ve simgeler.
+# pacman tarafından yönetilir; kaldırmak için: sudo pacman -R marmara
+#
+# LibreWolf güncellenince Marmara'yı da yeniden paketleyin (makepkg -si),
+# çünkü Marmara kendi LibreWolf kopyasını taşır.
+
+pkgname=marmara
+pkgver=158.0.1
+pkgrel=1
+pkgdesc="GNOME için gizlilik odaklı web tarayıcısı (LibreWolf tabanlı)"
+arch=(x86_64)
+license=(MPL-2.0)
+depends=(librewolf)
+makedepends=(python unzip zip)
+options=(!strip !debug)
+
+_root() { realpath "$startdir/../.."; }
+
+pkgver() {
+  sed -n 's/^Version=//p' /usr/lib/librewolf/application.ini | head -n1 | tr - _
+}
+
+build() {
+  cd "$(_root)"
+  ./build.sh /usr/lib/librewolf
+}
+
+package() {
+  local root
+  root="$(_root)"
+
+  install -d "$pkgdir/usr/lib"
+  cp -a "$root/dist/marmara" "$pkgdir/usr/lib/marmara"
+  chmod -R u+rwX,go+rX,go-w "$pkgdir/usr/lib/marmara"
+
+  install -d "$pkgdir/usr/bin"
+  ln -s /usr/lib/marmara/marmara "$pkgdir/usr/bin/marmara"
+
+  install -Dm644 "$root/packaging/linux/marmara.desktop" \
+    "$pkgdir/usr/share/applications/marmara.desktop"
+  install -Dm644 "$root/branding/marmara.svg" \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/marmara.svg"
+  for s in 16 32 48 64 128 256 512; do
+    install -Dm644 "$root/branding/icons/icon$s.png" \
+      "$pkgdir/usr/share/icons/hicolor/${s}x${s}/apps/marmara.png"
+  done
+  install -Dm644 "$root/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

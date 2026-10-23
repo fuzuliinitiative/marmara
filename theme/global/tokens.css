@@ -1,0 +1,119 @@
+/* Marmara — Adwaita renk ve şekil katmanı (genel)
+ *
+ * Bu dosya chrome://global/skin/marmara/tokens.css olarak paketlenir ve
+ * tokens-shared.css'in başına @import ile eklenir. Böylece tarayıcı penceresi,
+ * menüler, paneller ve about: sayfaları (ayarlar dahil) aynı paleti kullanır.
+ *
+ * Neden dayanıklı: Firefox kendi token'larını @layer içinde tanımlıyor.
+ * Buradaki kurallar katmansız olduğu için, sıradan bağımsız olarak her zaman
+ * onları ezer. Yalnızca Firefox'un tasarım sistemi token ADLARINA bağlıyız;
+ * seçicilere değil. Ad değişirse scripts/check-theme.py bunu raporlar.
+ *
+ * Yüksek karşıtlık ve zorunlu renk modlarında hiçbir şeye dokunmuyoruz.
+ */
+
+@media not ((forced-colors) or (prefers-contrast)) {
+  :root:not([lwtheme]),
+  :host(.anonymous-content-host) {
+    /* ---- libadwaita paleti (GNOME 47/48) ---- */
+    --mm-accent-bg: AccentColor;
+    --mm-accent-fg: AccentColorText;
+    --mm-accent: light-dark(
+      color-mix(in oklab, var(--mm-accent-bg) 78%, black),
+      color-mix(in oklab, var(--mm-accent-bg) 62%, white)
+    );
+    --mm-destructive: light-dark(#c01c28, #ff7b63);
+    --mm-success: light-dark(#1b8553, #78e9ab);
+    --mm-warning: light-dark(#9c6e03, #ffc252);
+
+    --mm-window-bg: light-dark(#fafafb, #222226);
+    --mm-window-fg: light-dark(rgb(0 0 6 / 0.8), #ffffff);
+    --mm-view-bg: light-dark(#ffffff, #1d1d20);
+    --mm-headerbar-bg: light-dark(#ffffff, #2e2e32);
+    --mm-headerbar-backdrop: light-dark(#fafafb, #222226);
+    --mm-headerbar-shade: light-dark(rgb(0 0 6 / 0.12), rgb(0 0 6 / 0.36));
+    --mm-sidebar-bg: light-dark(#ebebed, #2e2e32);
+    --mm-card-bg: light-dark(#ffffff, rgb(255 255 255 / 0.08));
+    --mm-popover-bg: light-dark(#ffffff, #36363a);
+    --mm-dialog-bg: light-dark(#fafafb, #36363a);
+    --mm-border: light-dark(rgb(0 0 6 / 0.15), rgb(255 255 255 / 0.15));
+    --mm-shade: light-dark(rgb(0 0 6 / 0.07), rgb(0 0 6 / 0.25));
+
+    /* libadwaita: düz düğmeler currentColor'ın şeffaf tonlarıyla çizilir */
+    --mm-hover: color-mix(in srgb, currentColor 7%, transparent);
+    --mm-active: color-mix(in srgb, currentColor 16%, transparent);
+    --mm-button: color-mix(in srgb, currentColor 10%, transparent);
+    --mm-button-hover: color-mix(in srgb, currentColor 15%, transparent);
+    --mm-button-active: color-mix(in srgb, currentColor 30%, transparent);
+    --mm-selected: color-mix(in srgb, currentColor 10%, transparent);
+
+    /* ---- Firefox tasarım sistemi token'ları ---- */
+
+    /* Vurgu rengi: GNOME Ayarlar > Görünüm'deki renk (AccentColor) */
+    --color-accent-primary: var(--mm-accent-bg);
+    --color-accent-primary-hover: color-mix(in srgb, var(--mm-accent-bg) 90%, currentColor);
+    --color-accent-primary-active: color-mix(in srgb, var(--mm-accent-bg) 80%, currentColor);
+    --color-accent-primary-selected: var(--mm-accent-bg);
+    --color-accent-attention: var(--mm-accent-bg);
+    --text-color-accent-primary-selected: var(--mm-accent-fg);
+    --border-color-selected: var(--mm-accent-bg);
+    --focus-outline-color: color-mix(in srgb, var(--mm-accent-bg) 50%, transparent);
+    --focus-outline-width: 2px;
+
+    --link-color: var(--mm-accent);
+    --link-color-hover: color-mix(in srgb, var(--mm-accent) 85%, currentColor);
+    --link-color-active: color-mix(in srgb, var(--mm-accent) 70%, currentColor);
+
+    /* Yüzeyler */
+    --background-color-canvas: var(--mm-window-bg);
+    --background-color-box: var(--mm-view-bg);
+    --text-color: var(--mm-window-fg);
+    --text-color-deemphasized: color-mix(in srgb, currentColor 55%, transparent);
+    --border-color-deemphasized: var(--mm-border);
+    --card-background-color: var(--mm-card-bg);
+    --card-border-color: transparent;
+    --card-box-shadow: 0 0 0 1px light-dark(rgb(0 0 6 / 0.03), rgb(0 0 6 / 0.09)),
+      0 1px 3px 1px light-dark(rgb(0 0 6 / 0.07), rgb(0 0 6 / 0.09)),
+      0 2px 6px 2px light-dark(rgb(0 0 6 / 0.03), rgb(0 0 6 / 0.06));
+
+    /* Düğmeler */
+    --button-background-color: var(--mm-button);
+    --button-background-color-hover: var(--mm-button-hover);
+    --button-background-color-active: var(--mm-button-active);
+    --button-background-color-ghost: transparent;
+    --button-background-color-ghost-hover: var(--mm-hover);
+    --button-background-color-ghost-active: var(--mm-active);
+    --button-background-color-primary: var(--mm-accent-bg);
+    --button-background-color-primary-hover: color-mix(in srgb, var(--mm-accent-bg) 90%, white);
+    --button-background-color-primary-active: color-mix(in srgb, var(--mm-accent-bg) 80%, black);
+    --button-text-color: currentColor;
+    --button-text-color-primary: var(--mm-accent-fg);
+    --button-border-color: transparent;
+
+    /* Girdi alanları: libadwaita entry, kenarlıksız, hafif gri dolgu */
+    --input-text-background-color: var(--mm-button);
+    --input-text-color: currentColor;
+
+    /* Açılır pencereler ve menüler (GtkPopover) */
+    --popup-background-color: var(--mm-popover-bg);
+    --popup-border-color: var(--mm-border);
+    --panel-background-color: var(--mm-popover-bg);
+    --panel-border-color: var(--mm-border);
+    --panel-text-color: var(--mm-window-fg);
+
+    /* Kenar çubuğu */
+    --sidebar-background-color: var(--mm-sidebar-bg);
+    --sidebar-text-color: var(--mm-window-fg);
+    --sidebar-border-color: var(--mm-headerbar-shade);
+
+    /* Şekil: libadwaita köşe yarıçapları */
+    --border-radius-xsmall: 4px;
+    --border-radius-small: 6px;
+    --border-radius-medium: 9px;
+    --border-radius-large: 12px;
+    --border-radius-xlarge: 15px;
+    --button-border-radius: 6px;
+    --popup-border-radius: 12px;
+    --card-border-radius: 12px;
+  }
+}

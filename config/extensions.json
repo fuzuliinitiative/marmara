@@ -1,0 +1,20 @@
+{
+  "__comment": "addons.mozilla.org'dan ilk açılışta kurulan eklentiler. 'slug' AMO adresindeki ad; 'id' derleme sırasında AMO'dan doğrulanır (scripts/make_policies.py). Marmara'nın kendi gömülü eklentileri builtin/ klasöründe.",
+  "extensions": [
+    {
+      "name": "uBlock Origin",
+      "slug": "ublock-origin",
+      "id": "uBlock0@raymondhill.net"
+    },
+    {
+      "name": "Privacy Badger",
+      "slug": "privacy-badger17",
+      "id": "jid1-MnnxcxisBPnSXQ@jetpack"
+    },
+    {
+      "name": "ClearURLs",
+      "slug": "clearurls",
+      "id": "{74145f27-f039-47ce-a470-a662b129930a}"
+    }
+  ]
+}

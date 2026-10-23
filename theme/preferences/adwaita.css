@@ -1,0 +1,85 @@
+/* Marmara — Ayarlar sayfasının Adwaita yorumu (AdwPreferencesWindow)
+ *
+ * Renkler zaten theme/global/tokens.css'ten geliyor. Burada düzeni GNOME
+ * ayar pencerelerine benzetiyoruz:
+ *  - solda gri kenar çubuğu, seçili satır hafif dolgulu (vurgu çizgisi yok)
+ *  - içerik ortada, en fazla 640px (AdwClamp)
+ *  - ayar grupları 12px köşeli kutular (boxed-list)
+ *  - anahtarlar GNOME anahtarı gibi: kapalıyken gri, açıkken vurgu rengi
+ *
+ * Firefox bileşenlerinin (moz-page-nav, moz-toggle) iç stilleri gölge DOM'da;
+ * değişkenleri doğrudan bileşen öğesinin üstünde tanımlıyoruz, çünkü dışarıdan
+ * verilen değer bileşenin kendi :host tanımını geçer.
+ */
+
+@media not ((forced-colors) or (prefers-contrast)) {
+
+  /* ---- Kenar çubuğu ---- */
+
+  #categories,
+  #categories > moz-page-nav-button {
+    --page-nav-margin-inline-start: 8px;
+    --page-nav-border-color: transparent;
+    --page-nav-button-border-radius: 6px;
+    --page-nav-button-padding: 8px 12px;
+    --page-nav-button-indicator-width: 0px;
+    --page-nav-button-background-color-hover: var(--mm-hover);
+    --page-nav-button-background-color-active: var(--mm-active);
+    --page-nav-button-background-color-selected: var(--mm-selected);
+    --page-nav-button-text-color-selected: var(--mm-window-fg);
+    --page-nav-button-text-color: var(--mm-window-fg);
+    --page-nav-hr-background-color: var(--mm-border);
+  }
+
+  #categories {
+    background-color: var(--mm-sidebar-bg);
+    border-inline-end: 1px solid var(--mm-headerbar-shade);
+    padding-inline-end: 8px;
+  }
+
+  /* LibreWolf'un "eski/yeni ayarlar arasında geçiş" düğmesi */
+  #toggleButton {
+    display: none !important;
+  }
+
+  /* ---- İçerik ---- */
+
+  .main-content {
+    padding-inline: 32px;
+  }
+
+  .pane-container {
+    width: min(100%, 640px);
+    margin-inline: auto;
+  }
+
+  #search-container {
+    background-color: var(--mm-window-bg);
+  }
+
+  /* ---- Anahtarlar: AdwSwitch ---- */
+
+  moz-toggle {
+    --toggle-width: 46px;
+    --toggle-height: 26px;
+    --toggle-border-width: 0px;
+    --toggle-dot-margin: 3px;
+    --toggle-dot-width: 20px;
+    --toggle-dot-height: 20px;
+    --toggle-dot-transform-x: 20px;
+    --toggle-border-radius: 13px;
+    --toggle-border-color: transparent;
+    --toggle-border-color-hover: transparent;
+    --toggle-border-color-active: transparent;
+    --toggle-background-color: color-mix(in srgb, currentColor 15%, transparent);
+    --toggle-background-color-hover: color-mix(in srgb, currentColor 20%, transparent);
+    --toggle-background-color-active: color-mix(in srgb, currentColor 25%, transparent);
+    --toggle-background-color-pressed: var(--mm-accent-bg);
+    --toggle-background-color-pressed-hover: color-mix(in srgb, var(--mm-accent-bg) 90%, white);
+    --toggle-background-color-pressed-active: color-mix(in srgb, var(--mm-accent-bg) 85%, black);
+    --toggle-dot-background-color: #ffffff;
+    --toggle-dot-background-color-hover: #ffffff;
+    --toggle-dot-background-color-active: #ffffff;
+    --toggle-dot-background-color-on-pressed: #ffffff;
+  }
+}
