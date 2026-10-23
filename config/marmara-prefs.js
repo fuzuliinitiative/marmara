@@ -111,3 +111,11 @@ lockPref("identity.fxaccounts.enabled", false);
 // (modules/MarmaraStartpage.sys.mjs). Yeni sekme de aynı sayfayı açar.
 defaultPref("browser.startup.homepage", "about:marmara");
 defaultPref("browser.startup.page", 1);
+
+/** [SECTION] İLK AÇILIŞ
+ * Firefox'un "tarayıcıyı sistem dilinizde kullanmak ister misiniz?" sorusu ve
+ * kendi karşılama sayfası kapalı; dil, tema ve arama motoru Marmara'nın kendi
+ * karşılama ekranında (modules/MarmaraWelcome.sys.mjs) seçilir.
+ */
+lockPref("intl.multilingual.aboutWelcome.languageMismatchEnabled", false);
+lockPref("browser.aboutwelcome.enabled", false);
