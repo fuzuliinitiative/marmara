@@ -36,7 +36,7 @@ const PREF_LOCALE = "intl.locale.requested";
 // Güncelleme denetimi: yalnızca kullanıcı düğmeye basınca GitHub'a tek bir istek gider.
 // Marmara'nın GitHub proje yolu ("kullanıcı/proje"). Boşsa güncelleme grubu gizlenir.
 // En son sürüm, projenin en son release'inin etiketidir ("v1.1" ya da "1.1").
-const GITHUB_PROJECT = "";
+const GITHUB_PROJECT = "fuzuliinitiative/marmara";
 const UPDATE_TIMEOUT_MS = 10000;
 
 // Arayüz dilleri (Marmara yalnızca bunları taşır). Değer: intl.locale.requested.
