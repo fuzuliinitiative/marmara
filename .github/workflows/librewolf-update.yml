@@ -4,6 +4,8 @@
 #    aynıysa hiçbir şey yapmaz.
 #  - Yeniyse Marmara'yı derler, bir sonraki sürüm numarasıyla (1.0 → 1.0.1)
 #    release açar ve Linux arşivini ekler. Depoya geri yazmaz.
+#  - Marmara'nın kendi kodu (modules, theme, l10n, scripts, config…) main'e gönderilince
+#    de LibreWolf aynı olsa bile yeni sürüm yayımlar (elle çalıştırmaya gerek kalmaz).
 #  - Yamalar yeni Firefox yapısıyla uyuşmazsa "LibreWolf <sürüm> ile derleme
 #    başarısız" issue'su açar.
 #
@@ -14,6 +16,20 @@ name: LibreWolf güncellemesi
 on:
   schedule:
     - cron: "17 */6 * * *"
+  push:
+    branches: [main]
+    paths:
+      - addons/**
+      - branding/**
+      - builtin/**
+      - config/**
+      - l10n/**
+      - modules/**
+      - scripts/**
+      - settings/**
+      - startpage/**
+      - theme/**
+      - build.sh
   workflow_dispatch:
     inputs:
       force:
@@ -24,6 +40,11 @@ on:
 permissions:
   contents: write
   issues: write
+
+# Aynı anda iki sürüm numarası üretilmesin
+concurrency:
+  group: marmara-release
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -44,7 +65,7 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           notes=""
           [ -n "$tag" ] && notes="$(gh release view "$tag" --json body --jq .body)"
-          if [ "${{ github.event.inputs.force }}" != "true" ] && printf '%s\n' "$notes" | grep -qx "librewolf: ${{ steps.latest.outputs.tag }}"; then
+          if [ "${{ github.event.inputs.force }}" != "true" ] && [ "${{ github.event_name }}" != "push" ] && printf '%s\n' "$notes" | grep -qx "librewolf: ${{ steps.latest.outputs.tag }}"; then
             echo "new=false" >> "$GITHUB_OUTPUT"
           else
             echo "new=true" >> "$GITHUB_OUTPUT"
