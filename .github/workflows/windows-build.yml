@@ -111,9 +111,14 @@ jobs:
         shell: pwsh
         run: |
           $name = (Get-ChildItem marmara-*-windows-x86_64.zip | Select-Object -First 1).Name
+          $full = Join-Path (Get-Location) $name
           Remove-Item $name
-          7z a -tzip -mx=5 $name app\marmara | Out-Null
-          if ($LASTEXITCODE -ne 0) { Write-Host "::error::7z başarısız"; exit 1 }
+          # app klasörünün içinden paketle: zip'in kökü "marmara/" olsun
+          Push-Location app
+          7z a -tzip -mx=5 $full marmara | Out-Null
+          $rc = $LASTEXITCODE
+          Pop-Location
+          if ($rc -ne 0) { Write-Host "::error::7z başarısız"; exit 1 }
 
       - name: Başlat ve dene
         shell: pwsh
@@ -177,10 +182,14 @@ jobs:
       - name: Kurulum sihirbazını derle
         run: |
           unzip -q marmara-*-windows-x86_64.zip -d pkg
+          # Paketin kök klasörü: marmara-bin.exe'nin bulunduğu yer
+          appdir="$(dirname "$(find pkg -name marmara-bin.exe | head -n1)")"
+          echo "Uygulama klasörü: $appdir"
+          [ -f "$appdir/marmara-bin.exe" ] || { echo "marmara-bin.exe bulunamadı"; find pkg -maxdepth 3 | head -30; exit 1; }
           python3 -I scripts/make_ico.py installer.ico branding/icons/icon{16,32,48,64,128,256}.png
           makensis -V2 \
             -DVERSION="${{ needs.build.outputs.version }}" \
-            -DAPPDIR="$PWD/pkg/marmara" \
+            -DAPPDIR="$PWD/$appdir" \
             -DICON="$PWD/installer.ico" \
             -DOUTFILE="$PWD/Marmara-Setup.exe" \
             packaging/windows/installer.nsi
