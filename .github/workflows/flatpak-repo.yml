@@ -62,7 +62,7 @@ jobs:
         if: steps.check.outputs.new == 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends flatpak flatpak-builder gnupg ostree
+          sudo apt-get install -y --no-install-recommends flatpak flatpak-builder gnupg ostree librsvg2-common libgdk-pixbuf2.0-bin appstream
           flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
           flatpak install --user -y flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.mozilla.firefox.BaseApp//25.08
 
