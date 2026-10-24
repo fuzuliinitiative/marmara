@@ -10,8 +10,8 @@
   <summary>Privacy-focused web browser for GNOME</summary>
   <description>
     <p>Marmara is a privacy-focused web browser with a GNOME look, built on LibreWolf and Firefox.
-    It ships with uBlock Origin, Privacy Badger and ClearURLs, shows a Terms of Service; Didn't Read
-    rating in the address bar, and has simple, Adwaita-style settings.</p>
+    It ships with uBlock Origin, Privacy Badger and ClearURLs, can optionally show a Terms of
+    Service; Didn't Read rating in the address bar (off by default), and has simple, Adwaita-style settings.</p>
     <p>Marmara is not developed or endorsed by Mozilla or the LibreWolf project.</p>
   </description>
   <launchable type="desktop-id">io.github.fuzuliinitiative.Marmara.desktop</launchable>
@@ -40,7 +40,7 @@
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/fuzuliinitiative/marmara/main/flatpak/screenshot-2.png</image>
-      <caption>Terms of Service; Didn't Read rating in the address bar</caption>
+      <caption>Optional Terms of Service; Didn't Read rating in the address bar</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/fuzuliinitiative/marmara/main/flatpak/screenshot-3.png</image>

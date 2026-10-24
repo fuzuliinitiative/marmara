@@ -502,6 +502,10 @@ const PAGES = [
     icon: "privacy",
     groups: [
       {
+        k: "tosdr",
+        rows: [{ type: "switch", k: "tosdr", sub: true, bind: boolPref("marmara.tosdr.enabled") }],
+      },
+      {
         k: "tracking",
         rows: [
           {

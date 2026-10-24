@@ -30,8 +30,10 @@ Marmara'nın ilham kaynağı deniz anaları, logosu da öyle.
   yalnızca HTTPS.
 - **Yararlı eklentiler hazır:** uBlock Origin, Privacy Badger, ClearURLs ve ToS;DR ilk
   açılışta kurulur, gizli pencerelerde de çalışır.
-- **Kullanım koşulları bir bakışta:** Adres çubuğu, ziyaret ettiğiniz sitenin
-  [ToS;DR](https://tosdr.org) puanını gösterir.
+- **Kullanım koşulları bir bakışta (isteğe bağlı):** Adres çubuğu, ziyaret ettiğiniz
+  sitenin [ToS;DR](https://tosdr.org) puanını gösterebilir. Sitenin alan adı ToS;DR'a
+  gönderildiği için **varsayılan olarak kapalıdır**; Marmara ilk açılışta size sorar.
+  Gizli pencerelerden hiçbir şey gönderilmez.
 - **Sade ayarlar:** Uzun bir seçenek sayfası yerine arama özellikli, küçük, Adwaita
   görünümlü tek bir pencere.
 - **İlk açılış karşılaması:** Dilinizi, temanızı ve arama motorunuzu kendiniz seçersiniz.

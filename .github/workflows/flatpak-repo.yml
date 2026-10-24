@@ -82,6 +82,8 @@ jobs:
         run: |
           curl -fL --retry 3 -o marmara.tar.xz "${{ steps.release.outputs.url }}"
           sha="$(sha256sum marmara.tar.xz | cut -d' ' -f1)"
+          # Yazılım merkezlerinde doğru sürüm görünsün
+          sed -i "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${{ steps.release.outputs.version }}\" date=\"$(date -u +%F)\"/>|" io.github.fuzuliinitiative.Marmara.metainfo.xml
           python3 - "${{ steps.release.outputs.url }}" "$sha" <<'PY'
           import re, sys
           url, sha = sys.argv[1:3]

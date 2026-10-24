@@ -60,9 +60,11 @@ defaultPref("browser.aboutaddons.novaThemesPickerEnabled", false);
 
 /** [SECTION] HİZMET KOŞULLARI NOTU (ToS;DR)
  * Adres çubuğunda sitenin ToS;DR notu (modules/MarmaraTosdr.sys.mjs).
- * Gizli pencerelerde varsayılan olarak kapalı: oradaki siteler ToS;DR'a sorulmaz.
+ * Not için sitenin alan adı ToS;DR'a gönderilir; bu yüzden varsayılan KAPALI.
+ * Kullanıcı ilk açılış karşılamasında ya da Ayarlar > Gizlilik'ten kendisi açar.
+ * Gizli pencerelerde ayrıca varsayılan olarak kapalı.
  */
-defaultPref("marmara.tosdr.enabled", true);
+defaultPref("marmara.tosdr.enabled", false);
 defaultPref("marmara.tosdr.privateWindows", false);
 
 /** [SECTION] PROFİLLER

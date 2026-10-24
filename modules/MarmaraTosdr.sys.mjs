@@ -363,7 +363,7 @@ class WindowUI {
   // ---- Durum ----
 
   #enabledHere() {
-    if (!Services.prefs.getBoolPref(PREF_ENABLED, true)) {
+    if (!Services.prefs.getBoolPref(PREF_ENABLED, false)) {
       return false;
     }
     if (

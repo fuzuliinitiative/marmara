@@ -30,8 +30,10 @@ Marmara takes its inspiration from jellyfish, and so does its logo.
   HTTPS-only.
 - **Useful extensions built in:** uBlock Origin, Privacy Badger, ClearURLs and
   ToS;DR are installed on first run and also work in private windows.
-- **Terms of service at a glance:** the address bar shows the
-  [ToS;DR](https://tosdr.org) rating of the site you are visiting.
+- **Terms of service at a glance (optional):** the address bar can show the
+  [ToS;DR](https://tosdr.org) rating of the site you are visiting. It is **off by
+  default**, because it sends the site's domain name to ToS;DR; Marmara asks you on
+  first run. Nothing is sent from private windows.
 - **Simple settings:** one small Adwaita-style window instead of a long page of
   options, with search.
 - **First-run welcome:** pick your language, theme and search engine yourself.

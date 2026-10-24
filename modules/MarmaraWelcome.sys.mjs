@@ -6,7 +6,7 @@
  * Marmara: ilk açılış karşılaması
  *
  * Tarayıcı ilk kez açıldığında pencere içinde, Adwaita görünümlü bir kutu
- * gösterir ve üç şeyi sorar: dil, tema, arama motoru. Arama motoru önceden
+ * gösterir ve şunları sorar: dil, tema, hizmet koşulları notu (ToS;DR), arama motoru. Arama motoru önceden
  * seçili gelmez; kullanıcı kendisi seçer. Bitince (ya da atlanınca)
  * marmara.welcome.done işaretlenir ve bir daha gösterilmez.
  *
@@ -54,6 +54,7 @@ class WelcomeDialog {
     this.steps = [
       { key: "language", build: () => this.#languageList() },
       { key: "theme", build: () => this.#themeList() },
+      { key: "tosdr", build: () => this.#tosdrList() },
       { key: "search", build: () => this.#searchList() },
     ];
   }
@@ -104,6 +105,16 @@ class WelcomeDialog {
         // Tema seçilince hemen uygulanır; kutu da yeni renklere geçer
         this.#choiceRow({ l10n, selected: value == current, onPick: () => themeBinding.set(value) })
       )
+    );
+  }
+
+  /** Hizmet koşulları notu: alan adı ToS;DR'a gittiği için açıkça sorulur, varsayılan "gösterme" */
+  #tosdrList() {
+    const pref = "marmara.tosdr.enabled";
+    const on = Services.prefs.getBoolPref(pref, false);
+    return this.#card(
+      this.#choiceRow({ l10n: id("tosdr-off"), selected: !on, onPick: () => Services.prefs.setBoolPref(pref, false) }),
+      this.#choiceRow({ l10n: id("tosdr-on"), selected: on, onPick: () => Services.prefs.setBoolPref(pref, true) })
     );
   }
 
