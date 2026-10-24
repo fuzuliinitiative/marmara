@@ -15,6 +15,25 @@
 
 const PAGE = "chrome://browser/content/marmara/startpage.html";
 const CID = Components.ID("{3e5d1d9c-7a64-4c0f-8d3e-6b2a2d9d4f17}");
+const PREF_NEWTAB = "marmara.newtab.page"; // "start" | "blank" | "custom"
+const PREF_NEWTAB_URL = "marmara.newtab.url";
+
+/** Yalnızca http(s) adresi kabul eder; şema yoksa https eklenir. Geçersizse null. */
+export function normalizeUrl(raw) {
+  let value = String(raw ?? "").trim();
+  if (!value) {
+    return null;
+  }
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) {
+    value = "https://" + value;
+  }
+  try {
+    const url = new URL(value);
+    return url.protocol == "http:" || url.protocol == "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
 const CONTRACT = "@mozilla.org/network/protocol/about;1?what=marmara";
 
 class AboutMarmara {
@@ -59,14 +78,28 @@ export const MarmaraStartpage = {
       const { AboutNewTab } = ChromeUtils.importESModule(
         "resource:///modules/AboutNewTab.sys.mjs"
       );
-      AboutNewTab.newTabURL = "about:marmara";
+      // Ayarlar > Başlangıç ve sekmeler'deki seçim
+      const target = () => {
+        switch (Services.prefs.getStringPref(PREF_NEWTAB, "start")) {
+          case "blank":
+            return "about:blank";
+          case "custom":
+            return normalizeUrl(Services.prefs.getStringPref(PREF_NEWTAB_URL, "")) ?? "about:marmara";
+          default:
+            return "about:marmara";
+        }
+      };
+      AboutNewTab.newTabURL = target();
+      const prefObserver = { observe: () => (AboutNewTab.newTabURL = target()) };
+      Services.prefs.addObserver(PREF_NEWTAB, prefObserver);
+      Services.prefs.addObserver(PREF_NEWTAB_URL, prefObserver);
       // Eski eklenti kaldırılırken ya da başka bir eklenti yeni sekmeyi
       // değiştirirse adres sıfırlanabilir; bizimkine geri döndür.
       Services.obs.addObserver(
         {
           observe(_subject, _topic, url) {
-            if (url != "about:marmara") {
-              AboutNewTab.newTabURL = "about:marmara";
+            if (url != target()) {
+              AboutNewTab.newTabURL = target();
             }
           },
         },

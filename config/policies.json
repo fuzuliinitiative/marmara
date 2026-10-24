@@ -107,6 +107,13 @@
             "MoreFromMozilla": false,
             "FirefoxLabs": false
         },
-        "BlockAboutProfiles": true
+        "BlockAboutProfiles": true,
+        "3rdparty": {
+            "Extensions": {
+                "jid1-MnnxcxisBPnSXQ@jetpack": {
+                    "showIntroPage": false
+                }
+            }
+        }
     }
 }

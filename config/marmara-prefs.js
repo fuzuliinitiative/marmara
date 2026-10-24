@@ -120,4 +120,13 @@ defaultPref("browser.startup.page", 1);
  * karşılama ekranında (modules/MarmaraWelcome.sys.mjs) seçilir.
  */
 lockPref("intl.multilingual.aboutWelcome.languageMismatchEnabled", false);
+// "Web sayfalarının İngilizce sürümlerini görmek ister misiniz?" sorusu (Tor/RFP'den
+// gelir): 1 = sorma, dili değiştirme. Dil Marmara'nın kendi karşılamasında seçilir.
+lockPref("privacy.spoof_english", 1);
+
+/** [SECTION] BAŞLANGIÇ VE YENİ SEKME
+ * "start": Marmara başlangıç sayfası (about:marmara), "blank": boş sayfa.
+ * Açılış sayfası browser.startup.homepage ile belirlenir (yukarıda).
+ */
+defaultPref("marmara.newtab.page", "start");
 lockPref("browser.aboutwelcome.enabled", false);

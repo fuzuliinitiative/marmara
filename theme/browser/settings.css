@@ -295,6 +295,24 @@ dialog.marmara-settings-dialog {
   &:hover { background-color: color-mix(in srgb, currentColor 16%, transparent); }
 }
 
+/* Adres kutusu (açılış / yeni sekme sayfası) */
+.marmara-settings-input {
+  width: 280px;
+  max-width: 100%;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  color: inherit;
+  font: inherit;
+
+  &:hover { background-color: color-mix(in srgb, currentColor 16%, transparent); }
+  &:focus-visible { outline: 2px solid var(--mm-set-accent); outline-offset: 1px; }
+  &[aria-invalid="true"] { border-color: #e01b24; }
+}
+
 /* Yan yana seçenekler (tema) */
 .marmara-settings-segments {
   display: flex;

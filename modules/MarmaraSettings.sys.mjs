@@ -91,6 +91,55 @@ const themeBinding = {
   },
 };
 
+const { normalizeUrl } = ChromeUtils.importESModule("resource:///modules/MarmaraStartpage.sys.mjs");
+
+// Açılış sayfası: "start" (Marmara başlangıç sayfası), "blank" ya da "custom" (kendi adresi)
+const PREF_START_MODE = "marmara.startpage.page";
+const PREF_START_URL = "marmara.startpage.url";
+
+function applyStartPage() {
+  const mode = prefs.getStringPref(PREF_START_MODE, "start");
+  const url = normalizeUrl(prefs.getStringPref(PREF_START_URL, ""));
+  const home = mode == "blank" ? "about:blank" : mode == "custom" && url ? url : "about:marmara";
+  prefs.setStringPref("browser.startup.homepage", home);
+  if (prefs.getIntPref("browser.startup.page", 1) != 3) {
+    prefs.setIntPref("browser.startup.page", 1);
+  }
+}
+
+const startPageBinding = {
+  get: () => prefs.getStringPref(PREF_START_MODE, "start"),
+  set: value => {
+    prefs.setStringPref(PREF_START_MODE, value);
+    applyStartPage();
+  },
+};
+
+const startUrlBinding = {
+  get: () => prefs.getStringPref(PREF_START_URL, ""),
+  set: value => {
+    prefs.setStringPref(PREF_START_URL, value);
+    applyStartPage();
+  },
+};
+
+// Yeni sekme sayfası (uygulama: modules/MarmaraStartpage.sys.mjs)
+const newTabPageBinding = {
+  get: () => prefs.getStringPref("marmara.newtab.page", "start"),
+  set: value => prefs.setStringPref("marmara.newtab.page", value),
+};
+
+const newTabUrlBinding = {
+  get: () => prefs.getStringPref("marmara.newtab.url", ""),
+  set: value => prefs.setStringPref("marmara.newtab.url", value),
+};
+
+const PAGE_CHOICES = [
+  ["start", "marmara-settings-page-choice-start"],
+  ["blank", "marmara-settings-page-choice-blank"],
+  ["custom", "marmara-settings-page-choice-custom"],
+];
+
 const sessionBinding = {
   get: () => prefs.getIntPref("browser.startup.page", 1) == 3,
   set: value => prefs.setIntPref("browser.startup.page", value ? 3 : 1),
@@ -485,6 +534,10 @@ const PAGES = [
       {
         k: "startup",
         rows: [
+          { type: "choice", k: "start-page", sub: true, bind: startPageBinding, options: PAGE_CHOICES },
+          { type: "text", k: "start-page-url", bind: startUrlBinding, show: () => startPageBinding.get() == "custom" },
+          { type: "choice", k: "new-tab-page", sub: true, bind: newTabPageBinding, options: PAGE_CHOICES },
+          { type: "text", k: "new-tab-page-url", bind: newTabUrlBinding, show: () => newTabPageBinding.get() == "custom" },
           { type: "switch", k: "restore-session", bind: sessionBinding },
           { type: "switch", k: "warn-close", bind: boolPref("browser.tabs.warnOnClose") },
           {
@@ -773,9 +826,45 @@ class SettingsDialog {
       if (notice) {
         notice.hidden = false;
       }
+      this.#applyRules(); // bağlı satırlar (örn. özel adres kutusu) güncellensin
     });
     const notice = spec.restart ? this.#restartNotice() : null;
     return [this.#row(spec, select), ...(notice ? [notice] : [])];
+  }
+
+  /** Adres kutusu: yalnızca geçerli http(s) adresi kaydedilir; geçersizse kırmızı çerçeve */
+  #textRow(spec) {
+    const input = create(this.doc, "input", {
+      className: "marmara-settings-input",
+      attrs: { type: "text", spellcheck: "false", autocomplete: "off", placeholder: "https://example.com" },
+    });
+    input.value = spec.bind.get();
+    const commit = () => {
+      const raw = input.value.trim();
+      const url = raw ? normalizeUrl(raw) : "";
+      if (url === null) {
+        input.setAttribute("aria-invalid", "true");
+        return;
+      }
+      input.removeAttribute("aria-invalid");
+      input.value = url;
+      spec.bind.set(url);
+    };
+    input.addEventListener("change", commit);
+    input.addEventListener("keydown", event => {
+      if (event.key == "Enter") {
+        commit();
+        input.blur();
+      }
+    });
+    const row = this.#row(spec, input);
+    if (spec.show) {
+      this.rules.push(() => {
+        row.dataset.hiddenByRule = spec.show() ? "0" : "1";
+        row.hidden = row.dataset.hiddenByRule == "1";
+      });
+    }
+    return row;
   }
 
   #segmentsRow(spec) {
@@ -945,6 +1034,8 @@ class SettingsDialog {
         return this.#choiceRows(spec);
       case "segments":
         return [this.#segmentsRow(spec)];
+      case "text":
+        return [this.#textRow(spec)];
       case "engine":
         return [this.#engineRow(spec)];
       case "button":
@@ -1018,7 +1109,7 @@ class SettingsDialog {
     this.empty.hidden = true;
     if (!needle) {
       for (const el of this.dialog.querySelectorAll(ROWS)) {
-        el.hidden = false;
+        el.hidden = el.dataset.hiddenByRule == "1";
       }
       for (const group of this.dialog.querySelectorAll(".marmara-settings-group")) {
         group.hidden = group.dataset.hiddenByRule == "1";
@@ -1031,7 +1122,7 @@ class SettingsDialog {
       for (const group of section.querySelectorAll(".marmara-settings-group")) {
         let visibleRows = 0;
         for (const row of group.querySelectorAll(ROWS)) {
-          const match = row.textContent.toLocaleLowerCase().includes(needle);
+          const match = row.dataset.hiddenByRule != "1" && row.textContent.toLocaleLowerCase().includes(needle);
           row.hidden = !match;
           visibleRows += match ? 1 : 0;
         }
