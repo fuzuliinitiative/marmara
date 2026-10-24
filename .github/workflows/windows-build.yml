@@ -242,6 +242,9 @@ jobs:
           if (-not (Test-Path $desktop)) { Write-Host "::warning::Masaüstü kısayolu yok ($desktop)" }
           $key = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Marmara"
           if (-not (Test-Path $key)) { Write-Host "::error::Kaldırma kaydı yok"; exit 1 }
+          foreach ($k in "HKCU:\Software\Clients\StartMenuInternet\Marmara\Capabilities", "HKCU:\Software\Classes\MarmaraURL\shell\open\command") {
+            if (-not (Test-Path $k)) { Write-Host "::error::Tarayıcı kaydı yok: $k"; exit 1 }
+          }
           Write-Host "Kısayol hedefi:"
           $sh = New-Object -ComObject WScript.Shell
           $lnk = $sh.CreateShortcut($menu)

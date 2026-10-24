@@ -18,6 +18,8 @@
  * (scripts/patch_omni.py).
  */
 
+const { AppConstants } = ChromeUtils.importESModule("resource://gre/modules/AppConstants.sys.mjs");
+
 const HTML_NS = "http://www.w3.org/1999/xhtml";
 const ICON = name =>
   ({
@@ -157,21 +159,50 @@ function copyToClipboard(text) {
   }
 }
 
-function canSetDefaultBrowser(win) {
-  const gio = Cc["@mozilla.org/gio-service;1"];
-  const flatpak = gio ? gio.getService(Ci.nsIGIOService).isRunningUnderFlatpak : false;
-  return (
-    !!shellService(win) &&
-    !flatpak &&
-    Services.policies.isAllowed("setDefaultBrowser")
-  );
+const DESKTOP_ID = "marmara.desktop";
+const FLATPAK_DEFAULT_COMMAND = `xdg-settings set default-web-browser ${FLATPAK_ID}.desktop`;
+
+/** xdg-settings'i çalıştırır; başarılıysa true */
+function runXdgSettings(args) {
+  for (const path of ["/usr/bin/xdg-settings", "/bin/xdg-settings"]) {
+    const file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+    file.initWithPath(path);
+    if (!file.exists()) {
+      continue;
+    }
+    const process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+    process.init(file);
+    process.run(true, args, args.length);
+    return process.exitValue == 0;
+  }
+  return false;
 }
 
-function isDefaultBrowser(win) {
-  try {
-    return !!shellService(win)?.isDefaultBrowser(false, true);
-  } catch (e) {
-    return false;
+/**
+ * Marmara'yı varsayılan tarayıcı yapar; sonucu bildiren ileti anahtarını döndürür.
+ * Firefox'un kendi yöntemi Linux'ta marmara-bin'e doğrudan işaret eden, simgesiz
+ * ve sarmalayıcıyı atlayan geçici bir kayıt (userapp-*.desktop) oluşturduğu için
+ * kullanılmaz; gerçek masaüstü kaydı (marmara.desktop) xdg-settings ile seçilir.
+ */
+function makeDefaultBrowser(win) {
+  if (isFlatpak()) {
+    // Sandbox'ın dışına çıkmıyoruz: komutu kopyalar, kullanıcı terminalde çalıştırır
+    copyToClipboard(FLATPAK_DEFAULT_COMMAND);
+    return "make-default-flatpak";
+  }
+  switch (AppConstants.platform) {
+    case "linux":
+      return runXdgSettings(["set", "default-web-browser", DESKTOP_ID]) ? "make-default-done" : "make-default-failed";
+    case "win": {
+      const uri = Services.io.newURI("ms-settings:defaultapps");
+      Cc["@mozilla.org/uriloader/external-protocol-service;1"]
+        .getService(Ci.nsIExternalProtocolService)
+        .loadURI(uri, Services.scriptSecurityManager.getSystemPrincipal());
+      return "make-default-windows";
+    }
+    default:
+      shellService(win)?.setDefaultBrowser(false);
+      return "make-default-done";
   }
 }
 
@@ -291,9 +322,11 @@ async function fetchLatest(win) {
   }
   // Windows'ta kurulum sihirbazı sürüme eklenmişse doğrudan indirilip kurulabilir
   const asset = (info.assets ?? []).find(a => /-windows-x86_64-setup\.exe$/.test(a?.name ?? ""));
+  // Sağlama toplamı (digest) yoksa doğrulanamayacağı için tek tıkla kurulum sunulmaz
+  const sha256 = /^sha256:([0-9a-f]{64})$/.exec(asset?.digest ?? "")?.[1];
   const installer =
-    asset && String(asset.browser_download_url).startsWith(`https://github.com/${GITHUB_PROJECT}/releases/download/`)
-      ? { url: asset.browser_download_url, sha256: /^sha256:([0-9a-f]{64})$/.exec(asset.digest ?? "")?.[1] ?? null }
+    sha256 && String(asset.browser_download_url).startsWith(`https://github.com/${GITHUB_PROJECT}/releases/download/`)
+      ? { url: asset.browser_download_url, sha256 }
       : null;
   return { version, url: `https://github.com/${GITHUB_PROJECT}/releases/latest`, installer };
 }
@@ -320,8 +353,10 @@ function canSelfUpdate() {
 /** Kurulum sihirbazını indirir (onProgress(0..1)), sağlama toplamını doğrular, dosya yolunu döndürür */
 async function downloadInstaller(installer, onProgress) {
   const { Downloads } = ChromeUtils.importESModule("resource://gre/modules/Downloads.sys.mjs");
-  const target = PathUtils.join(PathUtils.tempDir, "Marmara-Setup-update.exe");
-  await IOUtils.remove(target, { ignoreAbsent: true });
+  // Tahmin edilemeyen klasör: başka bir işlem dosyayı doğrulamadan sonra değiştiremesin
+  const dir = PathUtils.join(PathUtils.tempDir, `marmara-update-${Services.uuid.generateUUID().toString().slice(1, -1)}`);
+  await IOUtils.makeDirectory(dir, { permissions: 0o700 });
+  const target = PathUtils.join(dir, "Marmara-Setup.exe");
   const download = await Downloads.createDownload({
     source: { url: installer.url, isPrivate: true },
     target,
@@ -329,7 +364,7 @@ async function downloadInstaller(installer, onProgress) {
   download.onchange = () => onProgress(download.progress / 100);
   await download.start();
 
-  if (installer.sha256) {
+  {
     const file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
     file.initWithPath(target);
     const stream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
@@ -381,15 +416,18 @@ const PAGES = [
     groups: [
       {
         k: "default-browser",
-        show: win => canSetDefaultBrowser(win) && !isDefaultBrowser(win),
         rows: [
           {
             type: "button",
             k: "make-default",
             sub: true,
             icon: "arrow-right",
-            run: async win => {
-              await shellService(win)?.setDefaultBrowser(false);
+            run: async (win, row) => {
+              const message = makeDefaultBrowser(win);
+              const sub = row.querySelector(".marmara-settings-sub");
+              sub.setAttribute("data-l10n-id", id(message));
+              sub.setAttribute("data-l10n-args", JSON.stringify({ command: FLATPAK_DEFAULT_COMMAND }));
+              win.document.l10n.translateFragment(row);
             },
           },
         ],
@@ -800,7 +838,7 @@ class SettingsDialog {
     );
     row.addEventListener("click", async () => {
       try {
-        await spec.run(this.win);
+        await spec.run(this.win, row);
       } catch (e) {
         console.error("Marmara ayarlar:", e);
       }

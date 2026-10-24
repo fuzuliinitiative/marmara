@@ -81,6 +81,26 @@ Section "Marmara" SecMain
   CreateShortcut "$DESKTOP\Marmara.lnk" "$INSTDIR\marmara-bin.exe" '-app "$INSTDIR\browser\application.ini"' "$INSTDIR\marmara-bin.exe" 0
 
   WriteRegStr HKCU "Software\Marmara" "InstallDir" "$INSTDIR"
+
+  ; Windows'a "Marmara bir tarayıcıdır" kaydı: Ayarlar > Varsayılan uygulamalar listesinde görünür
+  !define BROWSER_KEY "Software\Clients\StartMenuInternet\Marmara"
+  WriteRegStr HKCU "${BROWSER_KEY}" "" "Marmara"
+  WriteRegStr HKCU "${BROWSER_KEY}\DefaultIcon" "" "$INSTDIR\marmara-bin.exe,0"
+  WriteRegStr HKCU "${BROWSER_KEY}\shell\open\command" "" '"$INSTDIR\marmara-bin.exe" -app "$INSTDIR\browser\application.ini"'
+  WriteRegStr HKCU "${BROWSER_KEY}\Capabilities" "ApplicationName" "Marmara"
+  WriteRegStr HKCU "${BROWSER_KEY}\Capabilities" "ApplicationDescription" "Basit ve şeffaf web tarayıcısı"
+  WriteRegStr HKCU "${BROWSER_KEY}\Capabilities\URLAssociations" "http" "MarmaraURL"
+  WriteRegStr HKCU "${BROWSER_KEY}\Capabilities\URLAssociations" "https" "MarmaraURL"
+  WriteRegStr HKCU "${BROWSER_KEY}\Capabilities\FileAssociations" ".htm" "MarmaraHTML"
+  WriteRegStr HKCU "${BROWSER_KEY}\Capabilities\FileAssociations" ".html" "MarmaraHTML"
+  WriteRegStr HKCU "Software\RegisteredApplications" "Marmara" "${BROWSER_KEY}\Capabilities"
+  WriteRegStr HKCU "Software\Classes\MarmaraURL" "" "Marmara URL"
+  WriteRegStr HKCU "Software\Classes\MarmaraURL" "URL Protocol" ""
+  WriteRegStr HKCU "Software\Classes\MarmaraURL\DefaultIcon" "" "$INSTDIR\marmara-bin.exe,0"
+  WriteRegStr HKCU "Software\Classes\MarmaraURL\shell\open\command" "" '"$INSTDIR\marmara-bin.exe" -app "$INSTDIR\browser\application.ini" -osint -url "%1"'
+  WriteRegStr HKCU "Software\Classes\MarmaraHTML" "" "Marmara HTML"
+  WriteRegStr HKCU "Software\Classes\MarmaraHTML\DefaultIcon" "" "$INSTDIR\marmara-bin.exe,0"
+  WriteRegStr HKCU "Software\Classes\MarmaraHTML\shell\open\command" "" '"$INSTDIR\marmara-bin.exe" -app "$INSTDIR\browser\application.ini" -osint -url "%1"'
   WriteRegStr HKCU "${UNINSTALL_KEY}" "DisplayName" "Marmara"
   WriteRegStr HKCU "${UNINSTALL_KEY}" "DisplayVersion" "${VERSION}"
   WriteRegStr HKCU "${UNINSTALL_KEY}" "Publisher" "Fuzuliinitiative"
@@ -109,4 +129,8 @@ Section "Uninstall"
   RMDir /r "$INSTDIR"
   DeleteRegKey HKCU "${UNINSTALL_KEY}"
   DeleteRegKey HKCU "Software\Marmara"
+  DeleteRegKey HKCU "Software\Clients\StartMenuInternet\Marmara"
+  DeleteRegValue HKCU "Software\RegisteredApplications" "Marmara"
+  DeleteRegKey HKCU "Software\Classes\MarmaraURL"
+  DeleteRegKey HKCU "Software\Classes\MarmaraHTML"
 SectionEnd
